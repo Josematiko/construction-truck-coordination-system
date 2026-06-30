@@ -1,0 +1,259 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;800&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --page-bg:#e8eaf0;
+  --surface:#f2f4f8;
+  --surface-2:#e4e7ee;
+  --border:#ced3de;
+  --text-1:#1c2235;
+  --text-2:#3d4665;
+  --text-3:#6e7a9a;
+  --text-4:#9aa2b8;
+  --amber:#c07a08;
+  --amber-bg:rgba(192,122,8,0.09);
+  --green:#177a48;
+  --green-bg:rgba(23,122,72,0.08);
+  --blue:#1a60b0;
+  --blue-bg:rgba(26,96,176,0.08);
+}
+
+body { font-family:'Barlow',sans-serif; background:var(--page-bg); }
+
+.page-wrap {
+  max-width:1100px;
+  margin:0 auto;
+  padding:48px 32px 80px;
+}
+
+/* HEADER */
+.page-header {
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  margin-bottom:32px;
+  border-bottom:1px solid var(--border);
+  padding-bottom:20px;
+}
+
+.page-eyebrow {
+  font-family:'Barlow Condensed';
+  font-size:.7rem;
+  letter-spacing:.2em;
+  text-transform:uppercase;
+  color:var(--amber);
+  margin-bottom:6px;
+}
+
+.page-header h1 {
+  font-family:'Barlow Condensed';
+  font-size:2.2rem;
+  font-weight:800;
+  text-transform:uppercase;
+}
+
+/* CARD */
+.card {
+  background:var(--surface);
+  border:1px solid var(--border);
+  padding:20px;
+  margin-bottom:20px;
+}
+
+/* INFO GRID */
+.info-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:14px;
+}
+
+.info-box {
+  background:var(--surface-2);
+  padding:12px;
+  border:1px solid var(--border);
+}
+
+.info-label {
+  font-size:.7rem;
+  text-transform:uppercase;
+  color:var(--text-4);
+}
+
+.info-value {
+  font-size:.9rem;
+  color:var(--text-1);
+}
+
+/* BUTTONS */
+.btn {
+  font-family:'Barlow Condensed';
+  text-transform:uppercase;
+  font-size:.75rem;
+  padding:10px 18px;
+  border:none;
+  cursor:pointer;
+  display:inline-block;
+  text-decoration:none;
+}
+
+.btn-primary { background:var(--amber); color:#fff; }
+.btn-success { background:var(--green); color:#fff; }
+
+/* STATUS */
+.status {
+  font-size:.75rem;
+  padding:4px 10px;
+  display:inline-block;
+}
+
+.pending { background:var(--amber-bg); color:var(--amber); }
+.transit { background:var(--blue-bg); color:var(--blue); }
+.done { background:var(--green-bg); color:var(--green); }
+
+/* OFFERS */
+.offer-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:12px;
+}
+
+.offer-card {
+  background:var(--surface-2);
+  padding:14px;
+  text-align:center;
+  border:1px solid var(--border);
+}
+
+/* ORDER CARD */
+.order-card {
+  background:var(--surface-2);
+  padding:16px;
+  border:1px solid var(--border);
+  margin-bottom:12px;
+  cursor:pointer;
+}
+
+.order-card:hover {
+  background:#dde0e8;
+}
+
+/* EMPTY */
+.empty-state {
+  text-align:center;
+  padding:40px;
+  color:var(--text-4);
+}
+</style>
+
+<div class="page-wrap">
+
+<!-- HEADER -->
+<div class="page-header">
+  <div>
+    <div class="page-eyebrow">Customer</div>
+    <h1>Dashboard</h1>
+  </div>
+</div>
+
+<!-- NOTIFICATIONS -->
+{% if unread_count > 0 %}
+<div class="card">
+  <strong>📬 New Messages</strong><br>
+  You have {{ unread_count }} unread message(s).
+  <br><br>
+  <a href="{{ url_for('customer.my_orders') }}" class="btn btn-primary">View Orders</a>
+</div>
+{% endif %}
+
+<!-- OFFERS -->
+<div class="card">
+  <strong>🎯 Special Offers</strong>
+
+  <div class="offer-grid" style="margin-top:12px;">
+    {% for material in materials %}
+      {% if material.discount_price %}
+      <div class="offer-card">
+        <strong>{{ material.name }}</strong>
+        <div style="text-decoration:line-through; font-size:.8rem;">
+          Ksh {{ material.price }}
+        </div>
+        <div style="font-weight:bold;">
+          Ksh {{ material.discount_price }}
+        </div>
+      </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>
+
+<!-- ACTIONS -->
+<div class="card">
+  <strong>⚡ Quick Actions</strong><br><br>
+
+  <a href="{{ url_for('customer.place_order') }}" class="btn btn-primary">Place Order</a>
+  <a href="{{ url_for('customer.my_orders') }}" class="btn btn-success">View Orders</a>
+</div>
+
+<!-- ORDERS -->
+<div class="card">
+  <strong>📦 Recent Orders (Latest 3)</strong>
+
+  {% if orders %}
+    {% for order in orders %}
+    <div class="order-card">
+
+      <div class="info-grid">
+        <div class="info-box">
+          <div class="info-label">Material</div>
+          <div class="info-value">{{ order.material.name }}</div>
+        </div>
+
+        <div class="info-box">
+          <div class="info-label">Quantity</div>
+          <div class="info-value">{{ order.quantity }}</div>
+        </div>
+
+        <div class="info-box">
+          <div class="info-label">Total</div>
+          <div class="info-value">Ksh {{ order.total_price }}</div>
+        </div>
+
+        <div class="info-box">
+          <div class="info-label">Status</div>
+
+          {% if order.status == 'Pending' and not order.driver_id %}
+            <span class="status pending">Finding Driver</span>
+          {% elif order.status == 'Pending Driver Response' %}
+            <span class="status pending">Driver Reviewing</span>
+          {% elif order.status == 'Awaiting Payment' %}
+            <span class="status pending">Awaiting Payment</span>
+          {% elif order.status == 'Payment Failed' %}
+            <span class="status pending">Payment Failed</span>
+          {% elif order.status == 'In Transit' %}
+            <span class="status transit">In Transit</span>
+          {% else %}
+            <span class="status done">Completed</span>
+          {% endif %}
+        </div>
+      </div>
+
+      <div style="margin-top:12px;">
+        <a href="{{ url_for('customer.my_orders') }}" class="btn btn-success">View Order</a>
+      </div>
+
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="empty-state">
+      No orders yet.<br><br>
+      <a href="{{ url_for('customer.place_order') }}" class="btn btn-primary">Place Order</a>
+    </div>
+  {% endif %}
+</div>
+
+</div>
+
+{% endblock %}

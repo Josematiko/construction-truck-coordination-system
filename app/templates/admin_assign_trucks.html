@@ -1,0 +1,415 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;800&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --page-bg:   #e8eaf0;
+    --surface:   #f2f4f8;
+    --surface-2: #e4e7ee;
+    --surface-3: #dde0e8;
+    --border:    #ced3de;
+    --border-2:  #b8bfcf;
+    --text-1:    #1c2235;
+    --text-2:    #3d4665;
+    --text-3:    #6e7a9a;
+    --text-4:    #9aa2b8;
+    --amber:     #c07a08;
+    --amber-bg:  rgba(192,122,8,0.09);
+    --amber-br:  rgba(192,122,8,0.28);
+    --green:     #177a48;
+    --green-bg:  rgba(23,122,72,0.08);
+    --green-br:  rgba(23,122,72,0.28);
+    --blue:      #1a60b0;
+    --blue-bg:   rgba(26,96,176,0.08);
+    --blue-br:   rgba(26,96,176,0.24);
+    --red:       #b02828;
+    --red-bg:    rgba(176,40,40,0.07);
+    --red-br:    rgba(176,40,40,0.24);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; min-height: 100vh; }
+  body { font-family: 'Barlow', sans-serif; background: var(--page-bg); color: var(--text-1); }
+
+  /* ─── LAYOUT ──────────────────────────────────────────── */
+  .page-wrap {
+    max-width: 1100px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 48px 32px 80px;
+  }
+
+  /* ─── HEADER ──────────────────────────────────────────── */
+  .page-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 40px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+    gap: 20px;
+    animation: slideDown 0.6s cubic-bezier(.16,1,.3,1) both;
+  }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .page-eyebrow {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .page-eyebrow::before { content: ''; width: 24px; height: 2px; background: var(--amber); display: block; }
+
+  .page-header h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 2.4rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    color: var(--text-1);
+    line-height: 1;
+  }
+  .page-header h1 span { color: var(--amber); }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    text-decoration: none;
+    border: 1px solid var(--border-2);
+    border-radius: 2px;
+    padding: 9px 18px;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+  }
+  .back-link:hover { color: var(--text-1); border-color: var(--text-4); background: var(--surface-2); }
+  .back-link::before { content: '‹'; font-size: 1rem; line-height: 1; }
+
+  /* ─── INFO BAR ────────────────────────────────────────── */
+  .info-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--blue-bg);
+    border: 1px solid var(--blue-br);
+    border-radius: 4px;
+    padding: 14px 20px;
+    margin-bottom: 28px;
+    animation: fadeUp 0.5s 0.08s cubic-bezier(.16,1,.3,1) both;
+  }
+  .info-bar-icon {
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+  .info-bar-text {
+    font-size: 0.83rem;
+    font-weight: 400;
+    color: var(--blue);
+    line-height: 1.5;
+  }
+
+  /* ─── SECTION LABEL ───────────────────────────────────── */
+  .section-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-4);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  .count-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    background: var(--amber-bg);
+    color: var(--amber);
+    border: 1px solid var(--amber-br);
+    border-radius: 2px;
+    padding: 2px 9px;
+    margin-left: 8px;
+  }
+
+  /* ─── TABLE CARD ──────────────────────────────────────── */
+  .table-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    animation: fadeUp 0.6s 0.12s cubic-bezier(.16,1,.3,1) both;
+    margin-bottom: 28px;
+  }
+  .table-wrap { overflow-x: auto; }
+
+  table { width: 100%; border-collapse: collapse; min-width: 680px; }
+
+  thead tr {
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+  }
+  th {
+    padding: 11px 18px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.63rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-4);
+    white-space: nowrap;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.18s;
+    animation: fadeUp 0.4s both;
+  }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--surface-2); }
+
+  td {
+    padding: 14px 18px;
+    font-size: 0.86rem;
+    color: var(--text-2);
+    vertical-align: middle;
+  }
+
+  /* ─── TRUCK REG ───────────────────────────────────────── */
+  .truck-reg {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--text-1);
+  }
+  .truck-icon {
+    width: 28px; height: 28px;
+    border-radius: 3px;
+    background: var(--amber-bg);
+    border: 1px solid var(--amber-br);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+  }
+
+  /* ─── DRIVER STATUS ───────────────────────────────────── */
+  .driver-assigned {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.83rem;
+    font-weight: 500;
+    color: var(--text-1);
+  }
+  .driver-assigned::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    flex-shrink: 0;
+  }
+  .driver-unassigned {
+    font-size: 0.8rem;
+    font-style: italic;
+    color: var(--text-4);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .driver-unassigned::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--border-2);
+    flex-shrink: 0;
+  }
+
+  /* ─── SELECT ──────────────────────────────────────────── */
+  .driver-select {
+    width: 100%;
+    max-width: 200px;
+    padding: 8px 12px;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+    background: var(--page-bg);
+    color: var(--text-1);
+    font-family: 'Barlow', sans-serif;
+    font-size: 0.83rem;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236e7a9a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 30px;
+  }
+  .driver-select:focus { border-color: var(--amber); box-shadow: 0 0 0 3px var(--amber-bg); }
+
+  /* ─── SUBMIT BTN ──────────────────────────────────────── */
+  .btn-update {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #fff;
+    background: var(--amber);
+    border: none;
+    border-radius: 2px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.18s, box-shadow 0.2s;
+    white-space: nowrap;
+  }
+  .btn-update:hover { background: #a86a06; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(192,122,8,0.22); }
+
+  /* ─── EMPTY STATE ────────────────────────────────────── */
+  .empty-state { padding: 60px 32px; text-align: center; }
+  .empty-icon  { font-size: 2rem; margin-bottom: 14px; opacity: 0.35; }
+  .empty-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--text-3); margin-bottom: 6px;
+  }
+  .empty-sub { font-size: 0.83rem; color: var(--text-4); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── MOBILE ─────────────────────────────────────────── */
+  @media (max-width: 768px) {
+    .page-wrap { padding: 24px 16px 60px; }
+    .page-header h1 { font-size: 1.8rem; }
+    td, th { padding: 12px 14px; }
+    .driver-select { max-width: 160px; }
+  }
+</style>
+
+<div class="page-wrap">
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <div>
+      <div class="page-eyebrow">Admin — Fleet Management</div>
+      <h1>Assign <span>Trucks</span></h1>
+    </div>
+    <a href="{{ url_for('admin.dashboard') }}" class="back-link">Back to Dashboard</a>
+  </div>
+
+  <!-- INFO BAR -->
+  <div class="info-bar">
+    <div class="info-bar-icon">ℹ️</div>
+    <div class="info-bar-text">Select a driver from the dropdown and click <strong>Update</strong> to assign them to a truck. Choose <em>Unassign</em> to remove the current driver.</div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="section-label">
+    Fleet
+    <span class="count-badge">{{ trucks | length }}</span>
+  </div>
+
+  <div class="table-card">
+    <div class="table-wrap">
+      <form method="POST">
+        <table>
+          <thead>
+            <tr>
+              <th>Truck</th>
+              <th>Owner</th>
+              <th>Current Driver</th>
+              <th>Assign Driver</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for truck in trucks %}
+            <tr style="animation-delay: {{ loop.index0 * 0.04 }}s">
+
+              <td>
+                <div class="truck-reg">
+                  <div class="truck-icon">🚛</div>
+                  {{ truck.registration_number }}
+                </div>
+              </td>
+
+              <td>{{ truck.owner.full_name() if truck.owner else 'N/A' }}</td>
+
+              <td>
+                {% if truck.driver %}
+                  <span class="driver-assigned">{{ truck.driver.full_name() }}</span>
+                {% else %}
+                  <span class="driver-unassigned">Unassigned</span>
+                {% endif %}
+              </td>
+
+              <td>
+                <select name="driver_id" class="driver-select">
+                  <option value="">— Unassign —</option>
+                  {% for driver in drivers %}
+                  <option value="{{ driver.id }}" {% if truck.driver_id == driver.id %}selected{% endif %}>
+                    {{ driver.full_name() }}
+                  </option>
+                  {% endfor %}
+                </select>
+              </td>
+
+              <td>
+                <input type="hidden" name="truck_id" value="{{ truck.id }}">
+                <button type="submit" class="btn-update">↗ Update</button>
+              </td>
+
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="5">
+                <div class="empty-state">
+                  <div class="empty-icon">🚛</div>
+                  <div class="empty-title">No Trucks Found</div>
+                  <div class="empty-sub">No trucks have been added to the fleet yet.</div>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </form>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

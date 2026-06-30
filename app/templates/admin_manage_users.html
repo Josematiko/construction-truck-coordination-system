@@ -1,0 +1,687 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;800&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --page-bg:   #e8eaf0;
+    --surface:   #f2f4f8;
+    --surface-2: #e4e7ee;
+    --surface-3: #dde0e8;
+    --border:    #ced3de;
+    --border-2:  #b8bfcf;
+    --text-1:    #1c2235;
+    --text-2:    #3d4665;
+    --text-3:    #6e7a9a;
+    --text-4:    #9aa2b8;
+    --amber:     #c07a08;
+    --amber-bg:  rgba(192,122,8,0.09);
+    --amber-br:  rgba(192,122,8,0.28);
+    --green:     #177a48;
+    --green-bg:  rgba(23,122,72,0.08);
+    --green-br:  rgba(23,122,72,0.28);
+    --red:       #b02828;
+    --red-bg:    rgba(176,40,40,0.07);
+    --red-br:    rgba(176,40,40,0.24);
+    --blue:      #1a60b0;
+    --blue-bg:   rgba(26,96,176,0.08);
+    --blue-br:   rgba(26,96,176,0.24);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Barlow', sans-serif; background: var(--page-bg); color: var(--text-1); }
+
+  /* ─── LAYOUT ─────────────────────────────────────────── */
+  .page-wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 48px 32px 80px;
+  }
+
+  /* ─── HEADER ─────────────────────────────────────────── */
+  .page-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 40px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+    gap: 20px;
+    animation: slideDown 0.6s cubic-bezier(.16,1,.3,1) both;
+  }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .page-eyebrow {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .page-eyebrow::before { content: ''; width: 24px; height: 2px; background: var(--amber); display: block; }
+
+  .page-header h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 2.4rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    color: var(--text-1);
+    line-height: 1;
+  }
+  .page-header h1 span { color: var(--amber); }
+
+  .header-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    text-decoration: none;
+    border: 1px solid var(--border-2);
+    border-radius: 2px;
+    padding: 9px 18px;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+  }
+  .back-link:hover { color: var(--text-1); border-color: var(--text-4); background: var(--surface-2); }
+  .back-link::before { content: '‹'; font-size: 1rem; line-height: 1; }
+
+  .btn-add {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #fff;
+    background: var(--amber);
+    border: none;
+    border-radius: 2px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.18s, box-shadow 0.2s;
+  }
+  .btn-add:hover { background: #a86a06; transform: translateY(-1px); box-shadow: 0 6px 18px rgba(192,122,8,0.22); }
+
+  /* ─── STATS ──────────────────────────────────────────── */
+  .stats-bar {
+    display: flex;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 32px;
+    animation: fadeUp 0.6s 0.08s cubic-bezier(.16,1,.3,1) both;
+  }
+  .stat-cell {
+    flex: 1;
+    background: var(--surface);
+    padding: 22px 18px;
+    text-align: center;
+    position: relative;
+    transition: background 0.2s;
+  }
+  .stat-cell::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 0; height: 2px;
+    background: var(--amber);
+    transition: width 0.3s;
+  }
+  .stat-cell:hover { background: var(--surface-2); }
+  .stat-cell:hover::after { width: 50%; }
+  .stat-val {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text-1);
+    line-height: 1;
+    margin-bottom: 5px;
+  }
+  .stat-lbl {
+    font-size: 0.67rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-4);
+  }
+
+  /* ─── ADD USER FORM ──────────────────────────────────── */
+  .form-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 28px;
+    animation: fadeUp 0.5s cubic-bezier(.16,1,.3,1) both;
+  }
+  .form-card-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface-2);
+  }
+  .form-card-icon {
+    width: 28px; height: 28px;
+    background: var(--amber-bg);
+    border: 1px solid var(--amber-br);
+    border-radius: 3px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem;
+  }
+  .form-card-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-1);
+  }
+  .form-body { padding: 24px; }
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
+    margin-bottom: 22px;
+  }
+  .form-group label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: 6px;
+  }
+  .form-control {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+    background: var(--page-bg);
+    color: var(--text-1);
+    font-family: 'Barlow', sans-serif;
+    font-size: 0.88rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+  .form-control:focus { border-color: var(--amber); box-shadow: 0 0 0 3px var(--amber-bg); }
+  .btn-submit {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #fff;
+    background: var(--amber);
+    border: none;
+    border-radius: 2px;
+    padding: 10px 24px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-submit:hover { background: #a86a06; }
+
+  /* ─── TABLE CARD ─────────────────────────────────────── */
+  .section-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-4);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  .table-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    animation: fadeUp 0.6s 0.18s cubic-bezier(.16,1,.3,1) both;
+  }
+  .table-wrap { overflow-x: auto; }
+
+  table { width: 100%; border-collapse: collapse; min-width: 820px; }
+
+  thead tr {
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+  }
+  th {
+    padding: 11px 16px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.63rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-4);
+    white-space: nowrap;
+  }
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.18s;
+    animation: fadeUp 0.4s both;
+  }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--surface-2); }
+
+  td {
+    padding: 14px 16px;
+    font-size: 0.85rem;
+    color: var(--text-2);
+    vertical-align: middle;
+  }
+  .td-id {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-4);
+  }
+  .td-name {
+    font-weight: 500;
+    color: var(--text-1);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    white-space: nowrap;
+  }
+  .user-avatar {
+    width: 28px; height: 28px;
+    border-radius: 3px;
+    background: var(--amber-bg);
+    border: 1px solid var(--amber-br);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: var(--amber);
+    flex-shrink: 0;
+    text-transform: uppercase;
+  }
+
+  /* ─── ROLE BADGE ─────────────────────────────────────── */
+  .role-tag {
+    display: inline-block;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 2px;
+  }
+  .role-admin    { background: rgba(100,80,200,0.09); color: #5040b0; border: 1px solid rgba(100,80,200,0.22); }
+  .role-driver   { background: var(--blue-bg);  color: var(--blue);  border: 1px solid var(--blue-br); }
+  .role-customer { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-br); }
+  .role-owner    { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-br); }
+
+  /* ─── STATUS BADGE ───────────────────────────────────── */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 2px;
+  }
+  .badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+  .badge-approved { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-br); }
+  .badge-approved::before { background: var(--green); }
+  .badge-pending  { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-br); }
+  .badge-pending::before  { background: var(--amber); }
+  .badge-rejected { background: var(--red-bg);   color: var(--red);   border: 1px solid var(--red-br); }
+  .badge-rejected::before { background: var(--red); }
+  .badge-active   { background: var(--blue-bg);  color: var(--blue);  border: 1px solid var(--blue-br); }
+  .badge-active::before   { background: var(--blue); }
+
+  /* ─── LICENSE INFO ───────────────────────────────────── */
+  .license-info {
+    font-size: 0.78rem;
+    color: var(--text-3);
+  }
+  .license-info strong { color: var(--text-2); font-weight: 600; }
+  .license-info a {
+    color: var(--blue);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.75rem;
+  }
+  .license-info a:hover { text-decoration: underline; }
+
+  /* ─── ACTION LINKS ───────────────────────────────────── */
+  .action-group { display: flex; gap: 6px; flex-wrap: wrap; }
+
+  .act {
+    display: inline-flex;
+    align-items: center;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 5px 11px;
+    border-radius: 2px;
+    white-space: nowrap;
+    transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+  }
+  .act:hover { transform: translateY(-1px); }
+
+  .act-approve { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-br); }
+  .act-approve:hover { background: rgba(23,122,72,0.15); box-shadow: 0 3px 10px rgba(23,122,72,0.12); }
+  .act-reject  { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-br); }
+  .act-reject:hover  { background: rgba(192,122,8,0.15);  box-shadow: 0 3px 10px rgba(192,122,8,0.12); }
+  .act-edit    { background: var(--blue-bg);  color: var(--blue);  border: 1px solid var(--blue-br); }
+  .act-edit:hover    { background: rgba(26,96,176,0.15);  box-shadow: 0 3px 10px rgba(26,96,176,0.12); }
+  .act-delete  { background: var(--red-bg);   color: var(--red);   border: 1px solid var(--red-br); }
+  .act-delete:hover  { background: rgba(176,40,40,0.14);  box-shadow: 0 3px 10px rgba(176,40,40,0.12); }
+
+  /* ─── EMPTY STATE ────────────────────────────────────── */
+  .empty-state { padding: 60px 32px; text-align: center; }
+  .empty-icon  { font-size: 2rem; margin-bottom: 14px; opacity: 0.35; }
+  .empty-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--text-3); margin-bottom: 6px;
+  }
+  .empty-sub { font-size: 0.83rem; color: var(--text-4); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── MOBILE ─────────────────────────────────────────── */
+  @media (max-width: 768px) {
+    .page-wrap { padding: 32px 18px 60px; }
+    .stats-bar { flex-wrap: wrap; }
+    .stat-cell { flex: 1 1 calc(50% - 1px); }
+    .form-grid { grid-template-columns: 1fr; }
+    .page-header h1 { font-size: 1.8rem; }
+  }
+</style>
+
+<div class="page-wrap">
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <div>
+      <div class="page-eyebrow">Admin — User Management</div>
+      <h1>Manage <span>Users</span></h1>
+    </div>
+    <div class="header-actions">
+      <button id="add-user-btn" class="btn-add">+ Add New User</button>
+      <a href="{{ url_for('admin.dashboard') }}" class="back-link">Back to Dashboard</a>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-bar">
+    <div class="stat-cell">
+      <div class="stat-val">{{ total_customers }}</div>
+      <div class="stat-lbl">Customers</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-val">{{ total_drivers }}</div>
+      <div class="stat-lbl">Drivers</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-val">{{ total_owners }}</div>
+      <div class="stat-lbl">Truck Owners</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-val">{{ total_trucks }}</div>
+      <div class="stat-lbl">Trucks</div>
+    </div>
+  </div>
+
+  <!-- SEARCH BAR -->
+  <div style="margin-bottom: 24px; padding: 16px; background: var(--surface); border-radius: 8px; border: 1px solid var(--border);">
+    <form method="GET" action="{{ url_for('admin.manage_users') }}" style="display: flex; gap: 12px;">
+      <input type="text" name="search" placeholder="Search by name or email..." value="{{ search_query }}" style="flex: 1; padding: 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.95rem;">
+      <button type="submit" style="padding: 12px 24px; background: var(--amber); color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; text-transform: uppercase; font-size: 0.8rem;">Search</button>
+      {% if search_query %}
+        <a href="{{ url_for('admin.manage_users') }}" style="padding: 12px 24px; background: #ddd; color: #333; border: none; border-radius: 6px; text-decoration: none; font-weight: 600; text-transform: uppercase; font-size: 0.8rem; display: inline-flex; align-items: center;">Clear</a>
+      {% endif %}
+    </form>
+  </div>
+
+  <!-- ADD USER FORM -->
+  <div id="add-user-form" class="form-card" style="{% if editing_user or form.errors %}display:block;{% else %}display:none;{% endif %}">
+    <div class="form-card-head">
+      <div class="form-card-icon">👤</div>
+      <div class="form-card-title">{% if editing_user %}Edit User{% else %}Add New User{% endif %}</div>
+    </div>
+    <div class="form-body">
+      <form method="POST">
+        {{ form.hidden_tag() }}
+        <div class="form-grid">
+          <div class="form-group">
+            <label>{{ form.first_name.label }}</label>
+            {{ form.first_name(class="form-control", oninput="validateName(this)", pattern="[A-Za-z\\s]+") }}
+            {% if form.first_name.errors %}<div style="color:#b02828;font-size:0.8rem;margin-top:6px;">{{ form.first_name.errors[0] }}</div>{% endif %}
+          </div>
+          <div class="form-group">
+            <label>{{ form.middle_name.label }}</label>
+            {{ form.middle_name(class="form-control", oninput="validateName(this)", pattern="[A-Za-z\\s]*") }}
+            {% if form.middle_name.errors %}<div style="color:#b02828;font-size:0.8rem;margin-top:6px;">{{ form.middle_name.errors[0] }}</div>{% endif %}
+          </div>
+          <div class="form-group">
+            <label>{{ form.last_name.label }}</label>
+            {{ form.last_name(class="form-control", oninput="validateName(this)", pattern="[A-Za-z\\s]+") }}
+            {% if form.last_name.errors %}<div style="color:#b02828;font-size:0.8rem;margin-top:6px;">{{ form.last_name.errors[0] }}</div>{% endif %}
+          </div>
+          <div class="form-group">
+            <label>{{ form.email.label }}</label>
+            {{ form.email(class="form-control") }}
+          </div>
+          <div class="form-group">
+            <label>{{ form.phone.label }}</label>
+            {{ form.phone(class="form-control", id="admin_phone", oninput="validatePhone(this)") }}
+          </div>
+          <div class="form-group">
+            <label>{{ form.password.label }}{% if not editing_user %}<span style="color:red;">*</span>{% else %}<span style="color:#888;">(leave blank to keep current)</span>{% endif %}</label>
+            {{ form.password(class="form-control") }}
+          </div>
+          <div class="form-group">
+            <label>{{ form.confirm_password.label }}{% if not editing_user %}<span style="color:red;">*</span>{% endif %}</label>
+            {{ form.confirm_password(class="form-control") }}
+          </div>
+          <div class="form-group">
+            <label>{{ form.role.label }}</label>
+            {{ form.role(class="form-control") }}
+            {% if not is_primary_admin %}
+              <div style="color:#6b7280; font-size:0.9rem; margin-top:6px;">Only the primary admin can create or promote a user to admin.</div>
+            {% endif %}
+          </div>
+        </div>
+        <div>
+          {{ form.submit(class="btn-submit", value="Update User" if editing_user else "Add User") }}
+          {% if editing_user %}<a href="{{ url_for('admin.manage_users') }}" class="btn-submit" style="background:#888; margin-left:10px; text-decoration:none; display:inline-block;">Cancel</a>{% endif %}
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="section-label">
+    {% if search_query %}
+      Search Results for "{{ search_query }}" ({{ users|length }} found)
+    {% else %}
+      All Users ({{ users|length }} total)
+    {% endif %}
+  </div>
+  <div class="table-card">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>License Info</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for user in users %}
+          <tr style="animation-delay: {{ loop.index0 * 0.04 }}s">
+            <td class="td-id">#{{ user.id }}</td>
+
+            <td>
+              <div class="td-name">
+                <div class="user-avatar">{{ user.first_name[0] }}{{ user.last_name[0] }}</div>
+                {{ user.first_name }} {{ user.last_name }}
+              </div>
+            </td>
+
+            <td>{{ user.email }}</td>
+
+            <td>
+              <span class="role-tag role-{{ user.role }}">{{ user.role }}</span>
+            </td>
+
+            <td>
+              {% if user.role == 'driver' %}
+                {% if user.license_approved %}
+                  <span class="badge badge-approved">Approved</span>
+                {% elif user.status == 'Rejected' %}
+                  <span class="badge badge-rejected">Rejected</span>
+                {% else %}
+                  <span class="badge badge-pending">Pending</span>
+                {% endif %}
+              {% else %}
+                {% set st = (user.status or 'Active') | lower %}
+                {% if st == 'approved' %}
+                  <span class="badge badge-approved">Approved</span>
+                {% elif st == 'rejected' %}
+                  <span class="badge badge-rejected">Rejected</span>
+                {% else %}
+                  <span class="badge badge-active">Active</span>
+                {% endif %}
+              {% endif %}
+            </td>
+
+            <td>
+              {% if user.role == 'driver' %}
+                {% if user.license_number %}
+                  <div class="license-info">
+                    <strong>{{ user.license_number }}</strong>
+                    {% if user.license_photo %}
+                      <br><a href="{{ url_for('static', filename=user.license_photo) }}" target="_blank">View Photo →</a>
+                    {% endif %}
+                  </div>
+                {% else %}
+                  <span style="color:var(--text-4);font-size:0.8rem;">No license info</span>
+                {% endif %}
+              {% else %}
+                <span style="color:var(--text-4);font-size:0.8rem;">N/A</span>
+              {% endif %}
+            </td>
+
+            <td>
+              <div class="action-group">
+                {% if user.role == 'driver' %}
+                  {% if not user.license_approved and user.status != 'Rejected' %}
+                    <a href="{{ url_for('admin.approve_driver', user_id=user.id) }}" class="act act-approve">✓ Approve</a>
+                    <a href="{{ url_for('admin.reject_driver', user_id=user.id) }}" class="act act-reject">✕ Reject</a>
+                  {% elif user.license_approved %}
+                    <span class="badge badge-approved" style="font-size:0.8rem; padding:6px 10px;">Approved</span>
+                  {% endif %}
+                {% endif %}
+                <a href="{{ url_for('admin.edit_user', user_id=user.id) }}" class="act act-edit">✎ Edit</a>
+                {% if not user.is_primary_admin %}
+                  <a href="{{ url_for('admin.delete_user', user_id=user.id) }}" class="act act-delete" onclick="return confirm('Delete this user?');">✕ Delete</a>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="7">
+              <div class="empty-state">
+                <div class="empty-icon">👥</div>
+                <div class="empty-title">No Users Found</div>
+                <div class="empty-sub">No users have been added to the system yet.</div>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function validateName(input) {
+  input.value = input.value.replace(/[^A-Za-z\s]/g, '');
+}
+
+function validatePhone(input) {
+  let value = input.value.replace(/[^+\d]/g, '');
+  if (value.includes('+') && value.indexOf('+') !== 0) value = value.replace(/\+/g, '');
+  if (value.length > 13) value = value.substring(0, 13);
+  if (value.startsWith('+') && value.length === 1) value = '+';
+  input.value = value;
+}
+
+const addUserBtn = document.getElementById('add-user-btn');
+const addUserForm = document.getElementById('add-user-form');
+if (addUserBtn && addUserForm) {
+  addUserBtn.addEventListener('click', function () {
+    const open = addUserForm.style.display !== 'none';
+    addUserForm.style.display = open ? 'none' : 'block';
+    this.textContent = open ? '+ Add New User' : '✕ Hide Form';
+  });
+}
+
+// Restrict admin role selection to primary admin only
+const isPrimaryAdmin = {{ 'true' if is_primary_admin else 'false' }};
+const roleSelect = document.querySelector('select[name="role"]');
+if (roleSelect && !isPrimaryAdmin) {
+  const adminOption = Array.from(roleSelect.options).find(opt => opt.value === 'admin');
+  if (adminOption) {
+    adminOption.disabled = true;
+    adminOption.textContent = 'Administrator (Primary admin only)';
+  }
+}
+</script>
+
+{% endblock %}

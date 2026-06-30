@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Manage Users</h2>
+
+<table border="1" cellpadding="10" style="width:100%; text-align:left;">
+    <tr style="background-color:#f57c00; color:white;">
+        <th>ID</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Action</th>
+    </tr>
+
+    {% for user in users %}
+    <tr>
+        <td>{{ user.id }}</td>
+        <td>{{ user.first_name }} {{ user.last_name }}</td>
+        <td>{{ user.email }}</td>
+        <td>{{ user.role }}</td>
+        <td>
+            <a href="{{ url_for('admin.delete_user', user_id=user.id) }}"
+               style="color:red; text-decoration:none;"
+               onclick="return confirm('Are you sure you want to delete this user?');">
+               Delete
+            </a>
+        </td>
+    </tr>
+    {% else %}
+    <tr>
+        <td colspan="5">No users found</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<!-- Buttons -->
+
+
+    <a href="{{ url_for('admin.dashboard') }}" 
+       style="padding: 10px 20px; background-color: #28a745; color:white; border-radius:8px; text-decoration:none;">
+       Back 
+    </a>
+</div>
+
+{% endblock %}

@@ -1,0 +1,265 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;800&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --page-bg:#e8eaf0;
+    --surface:#f2f4f8;
+    --surface-2:#e4e7ee;
+    --border:#ced3de;
+    --text-1:#1c2235;
+    --text-2:#3d4665;
+    --text-3:#6e7a9a;
+    --text-4:#9aa2b8;
+    --amber:#c07a08;
+    --amber-bg:rgba(192,122,8,0.09);
+    --green:#177a48;
+    --green-bg:rgba(23,122,72,0.08);
+    --red:#b02828;
+    --red-bg:rgba(176,40,40,0.07);
+  }
+
+  body { font-family:'Barlow',sans-serif; background:var(--page-bg); }
+
+  .page-wrap {
+    max-width:1100px;
+    margin:0 auto;
+    padding:48px 32px 80px;
+  }
+
+  /* HEADER */
+  .page-header {
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    margin-bottom:40px;
+    border-bottom:1px solid var(--border);
+    padding-bottom:24px;
+    flex-wrap:wrap;
+  }
+
+  .page-eyebrow {
+    font-family:'Barlow Condensed';
+    font-size:.7rem;
+    letter-spacing:.2em;
+    text-transform:uppercase;
+    color:var(--amber);
+    margin-bottom:6px;
+  }
+
+  .page-header h1 {
+    font-family:'Barlow Condensed';
+    font-size:2.3rem;
+    font-weight:800;
+    text-transform:uppercase;
+  }
+
+  .page-header span { color:var(--amber); }
+
+  .back-link {
+    text-decoration:none;
+    border:1px solid var(--border);
+    padding:8px 16px;
+    font-size:.75rem;
+    text-transform:uppercase;
+    color:var(--text-3);
+  }
+
+  /* TABLE */
+  .table-card {
+    background:var(--surface);
+    border:1px solid var(--border);
+    overflow:hidden;
+  }
+
+  table {
+    width:100%;
+    border-collapse:collapse;
+  }
+
+  thead {
+    background:var(--surface-2);
+  }
+
+  th {
+    padding:12px;
+    font-size:.7rem;
+    text-transform:uppercase;
+    color:var(--text-4);
+    letter-spacing:.1em;
+  }
+
+  td {
+    padding:14px;
+    font-size:.85rem;
+    color:var(--text-2);
+  }
+
+  tr {
+    border-bottom:1px solid var(--border);
+  }
+
+  tr:hover {
+    background:var(--surface-2);
+  }
+
+  /* STATUS */
+  .status {
+    font-size:.8rem;
+    font-weight:600;
+  }
+
+  .pending { color:var(--amber); }
+  .approved { color:var(--green); }
+  .rejected { color:var(--red); }
+
+  /* ACTION BUTTONS */
+  .action-btn {
+    font-size:.75rem;
+    text-decoration:none;
+    margin-right:10px;
+    font-weight:600;
+  }
+
+  .approve { color:var(--green); }
+  .reject { color:var(--red); }
+
+  /* EMPTY */
+  .empty-state {
+    text-align:center;
+    padding:40px;
+    color:var(--text-4);
+  }
+</style>
+
+<div class="page-wrap">
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <div>
+      <div class="page-eyebrow">Admin — Orders</div>
+      <h1>All <span>Orders</span></h1>
+    </div>
+    <a href="{{ url_for('admin.dashboard') }}" class="back-link">Back</a>
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Customer</th>
+          <th>Customer Contact</th>
+          <th>Driver Contact</th>
+          <th>Material</th>
+          <th>Quantity</th>
+          <th>Total</th>
+          <th>Payment</th>
+          <th>Status / Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for order in orders %}
+        {% set payment = latest_payments.get(order.id) %}
+        <tr>
+          <td>#{{ order.id }}</td>
+
+          <td>
+            {{ order.customer.first_name }} {{ order.customer.last_name }}
+          </td>
+
+          <td>
+            {{ order.customer.email or 'N/A' }}<br>
+            {{ order.customer.phone or 'N/A' }}
+          </td>
+
+          <td>
+            {% if order.driver %}
+              {{ order.driver.first_name }} {{ order.driver.last_name }}<br>
+              {{ order.driver.email or 'N/A' }}<br>
+              {{ order.driver.phone or 'N/A' }}
+            {% else %}
+              Not assigned
+            {% endif %}
+          </td>
+
+          <td>{{ order.material.name }}</td>
+
+          <td>{{ order.quantity }}</td>
+
+          <td>Ksh {{ order.total_price }}</td>
+
+          <td>
+            {% if payment %}
+              <div><strong>{{ payment.payment_method or 'N/A' }}</strong></div>
+              <div class="status {% if payment.status == 'Completed' %}approved{% elif payment.status in ['Pending','Pending Confirmation'] %}pending{% else %}rejected{% endif %}">
+                {{ payment.status }}
+              </div>
+              <div style="font-size:0.75rem; color:var(--text-3);">
+                Amount: Ksh {{ '%.2f'|format(payment.amount or 0) }}
+              </div>
+              {% if payment.provider_reference %}
+              <div style="font-size:0.75rem; color:var(--text-3);">
+                Ref: {{ payment.provider_reference }}
+              </div>
+              {% endif %}
+              {% if payment.status in ['Pending','Pending Confirmation'] %}
+              <a href="{{ url_for('admin.confirm_payment', payment_id=payment.id) }}"
+                 class="action-btn approve"
+                 style="display:inline-block; margin-top:8px;">
+                 Confirm Payment
+              </a>
+              {% endif %}
+            {% else %}
+              <span style="color:var(--text-3);">No payment record</span>
+            {% endif %}
+          </td>
+
+          <td>
+            {% if order.status.lower() == 'pending' %}
+              <a href="{{ url_for('admin.update_order', order_id=order.id, status='Approved') }}"
+                 class="action-btn approve">✔ Approve</a>
+
+              <a href="{{ url_for('admin.update_order', order_id=order.id, status='Rejected') }}"
+                 class="action-btn reject">✖ Reject</a>
+
+              <div class="status pending">Pending</div>
+            {% elif order.status.lower() == 'pending driver response' %}
+              <div class="status pending">Pending Driver Response</div>
+            {% elif order.status.lower() == 'awaiting payment' %}
+              <div class="status pending">Awaiting Payment</div>
+            {% elif order.status.lower() == 'payment failed' %}
+              <div class="status rejected">Payment Failed</div>
+            {% elif order.status.lower() == 'in transit' %}
+              <div class="status approved">In Transit</div>
+            {% elif order.status.lower() == 'completed (pending admin approval)' %}
+              <div class="status pending">Completed (Pending Admin Approval)</div>
+            {% elif order.status.lower() == 'completed' %}
+              <div class="status approved">✔ Completed</div>
+            {% elif order.status.lower() == 'approved' %}
+              <div class="status approved">✔ Approved</div>
+            {% else %}
+              <div class="status rejected">✖ Rejected</div>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="9">
+            <div class="empty-state">
+              No orders available.
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+{% endblock %}

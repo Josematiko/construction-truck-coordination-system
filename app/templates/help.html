@@ -1,0 +1,279 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;800&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --page-bg:#e8eaf0;
+    --surface:#ffffff;
+    --surface-soft:#f2f4f8;
+    --border:#ced3de;
+    --text-1:#1c2235;
+    --text-2:#4b5563;
+    --text-3:#6e7a9a;
+    --amber:#c07a08;
+    --amber-soft:rgba(192,122,8,0.12);
+    --blue:#1a60b0;
+    --green:#177a48;
+    --shadow:0 18px 34px rgba(15,23,42,0.08);
+  }
+
+  body {
+    font-family:'Barlow',sans-serif;
+    background:linear-gradient(180deg, #eef1f6 0%, var(--page-bg) 100%);
+  }
+
+  .page-wrap {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 52px 24px 90px;
+  }
+
+  .hero {
+    background:linear-gradient(135deg, rgba(28,34,53,0.98), rgba(37,49,77,0.95));
+    color:#fff;
+    border-radius:24px;
+    padding:36px;
+    box-shadow:var(--shadow);
+    margin-bottom:28px;
+    position:relative;
+    overflow:hidden;
+  }
+
+  .hero::after {
+    content:'';
+    position:absolute;
+    right:-40px;
+    top:-40px;
+    width:180px;
+    height:180px;
+    background:radial-gradient(circle, rgba(192,122,8,0.35), rgba(192,122,8,0));
+  }
+
+  .eyebrow {
+    font-family:'Barlow Condensed',sans-serif;
+    font-size:.78rem;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    color:#f6c56a;
+    margin-bottom:12px;
+  }
+
+  .hero h1 {
+    font-family:'Barlow Condensed',sans-serif;
+    font-size:3rem;
+    line-height:1;
+    text-transform:uppercase;
+    margin-bottom:14px;
+  }
+
+  .hero p {
+    max-width:700px;
+    color:rgba(255,255,255,0.82);
+    font-size:1rem;
+    line-height:1.7;
+  }
+
+  .grid {
+    display:grid;
+    grid-template-columns:1.05fr .95fr;
+    gap:24px;
+    align-items:start;
+  }
+
+  .stack {
+    display:grid;
+    gap:24px;
+  }
+
+  .card {
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:22px;
+    padding:28px;
+    box-shadow:var(--shadow);
+  }
+
+  .section-title {
+    font-family:'Barlow Condensed',sans-serif;
+    font-size:1.25rem;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    color:var(--text-1);
+    margin-bottom:18px;
+  }
+
+  .support-list,
+  .role-grid,
+  .faq-list {
+    display:grid;
+    gap:16px;
+  }
+
+  .support-item {
+    background:var(--surface-soft);
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:18px;
+  }
+
+  .support-item h3,
+  .role-card h3,
+  .faq-item h3 {
+    font-family:'Barlow Condensed',sans-serif;
+    font-size:1rem;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color:var(--text-1);
+    margin-bottom:8px;
+  }
+
+  .support-item p,
+  .role-card li,
+  .faq-item p {
+    color:var(--text-2);
+    line-height:1.7;
+    font-size:.95rem;
+  }
+
+  .support-link {
+    display:inline-block;
+    margin-top:12px;
+    padding:10px 14px;
+    border-radius:12px;
+    background:var(--amber);
+    color:#fff;
+    text-decoration:none;
+    font-weight:700;
+    font-size:.88rem;
+  }
+
+  .role-grid {
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+  }
+
+  .role-card {
+    background:var(--surface-soft);
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:18px;
+  }
+
+  .role-card ul {
+    margin:0;
+    padding-left:18px;
+  }
+
+  .faq-item {
+    background:linear-gradient(180deg, #fff 0%, #f8f9fc 100%);
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:18px 18px 16px;
+  }
+
+  .faq-item h3 {
+    color:var(--blue);
+  }
+
+  .quick-note {
+    padding:16px 18px;
+    border-radius:18px;
+    background:var(--amber-soft);
+    border:1px solid rgba(192,122,8,0.2);
+    color:var(--text-1);
+    line-height:1.7;
+  }
+
+  .quick-note strong {
+    color:var(--amber);
+  }
+
+  @media (max-width: 900px) {
+    .grid {
+      grid-template-columns:1fr;
+    }
+
+    .role-grid {
+      grid-template-columns:1fr;
+    }
+
+    .hero h1 {
+      font-size:2.35rem;
+    }
+  }
+</style>
+
+<div class="page-wrap">
+  <div class="hero">
+    <div class="eyebrow">Support Center</div>
+    <h1>Help</h1>
+    <p>
+      Find practical guidance for orders, payments, dispatch, reviews, and admin actions.
+      This page is built around how the Construction Trucks System actually works today.
+    </p>
+  </div>
+
+  <div class="grid">
+    <div class="stack">
+      <div class="card">
+        <div class="section-title">Get Help Fast</div>
+        <div class="support-list">
+          {% for item in support_contacts %}
+          <div class="support-item">
+            <h3>{{ item.title }}</h3>
+            <p>{{ item.description }}</p>
+            <a href="{{ item.url }}" class="support-link">{{ item.action }}</a>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Role Guides</div>
+        <div class="role-grid">
+          {% for guide in role_guides %}
+          <div class="role-card">
+            <h3>{{ guide.title }}</h3>
+            <ul>
+              {% for item in guide['items'] %}
+              <li>{{ item }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div class="stack">
+      <div class="card">
+        <div class="section-title">Important Notes</div>
+        <div class="quick-note">
+          <strong>Payments:</strong> M-Pesa STK push needs valid Safaricom credentials and a working callback URL.
+          Paybill payments stay pending until an admin confirms them.
+        </div>
+        <div class="quick-note" style="margin-top:14px;">
+          <strong>Reviews:</strong> Customer reviews do not appear publicly immediately.
+        </div>
+        <div class="quick-note" style="margin-top:14px;">
+          <strong>Orders:</strong> Customers can place multiple orders. Each one tracks its own payment and delivery progress.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">FAQs</div>
+        <div class="faq-list">
+          {% for faq in faqs %}
+          <div class="faq-item">
+            <h3>{{ faq.question }}</h3>
+            <p>{{ faq.answer }}</p>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

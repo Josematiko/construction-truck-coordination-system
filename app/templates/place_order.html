@@ -1,0 +1,329 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+  :root {
+    --page-bg: #e8eaf0;
+    --surface: #f2f4f8;
+    --surface-alt: #ffffff;
+    --border: #ced3de;
+    --text-1: #1c2235;
+    --text-2: #4b5563;
+    --accent: #2563eb;
+    --accent-soft: rgba(37,99,235,0.12);
+    --danger: #dc2626;
+    --shadow: 0 16px 30px rgba(15,23,42,0.08);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Barlow', sans-serif; background: var(--page-bg); color: var(--text-1); }
+
+  .order-container {
+    max-width: 620px;
+    margin: 40px auto;
+    padding: 34px;
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+  }
+
+  .order-title {
+    font-size: 2rem;
+    color: var(--text-1);
+    margin-bottom: 26px;
+    text-align: center;
+    font-weight: 800;
+  }
+
+  .form-group { margin-bottom: 20px; }
+
+  .form-group label {
+    display: block;
+    font-weight: 700;
+    color: var(--text-2);
+    margin-bottom: 8px;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--surface);
+    color: var(--text-1);
+    font-size: 1rem;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .form-control:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-soft);
+  }
+
+  .submit-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--accent);
+    color: var(--surface-alt);
+    border: none;
+    border-radius: 14px;
+    font-weight: 800;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.25s ease, transform 0.25s ease;
+  }
+
+  .submit-btn:hover:not(:disabled) {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+  }
+
+  .submit-btn:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+    opacity: 0.8;
+  }
+
+  .alert {
+    padding: 18px;
+    border-radius: 16px;
+    margin-bottom: 20px;
+    background: rgba(248,249,250,0.9);
+    border-left: 4px solid var(--danger);
+    color: var(--text-2);
+  }
+
+  .alert h4 { margin-top: 0; margin-bottom: 10px; }
+
+  .button-group {
+    display: flex;
+    gap: 12px;
+    margin-top: 28px;
+    flex-wrap: wrap;
+  }
+
+  .price-panel {
+    margin: 8px 0 22px;
+    padding: 18px;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    background: linear-gradient(180deg, #f8faff 0%, #eef4ff 100%);
+  }
+
+  .price-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-2);
+    margin-bottom: 6px;
+    font-weight: 700;
+  }
+
+  .price-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(206,211,222,0.7);
+    color: var(--text-2);
+  }
+
+  .price-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .price-total {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--text-1);
+  }
+
+  .price-badge {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 7px 10px;
+    border-radius: 999px;
+    background: rgba(23,122,72,0.12);
+    color: #177a48;
+    font-size: 0.82rem;
+    font-weight: 700;
+  }
+
+  .btn {
+    flex: 1;
+    min-width: 140px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    text-align: center;
+    transition: transform 0.2s ease, background 0.2s ease;
+  }
+
+  .btn-secondary {
+    background: var(--surface);
+    color: var(--text-1);
+    border: 1px solid var(--border);
+  }
+
+  .btn-secondary:hover {
+    background: var(--page-bg);
+    transform: translateY(-1px);
+  }
+
+  @media (max-width: 768px) {
+    .order-container { margin: 24px auto; padding: 26px; }
+    .order-title { font-size: 1.6rem; }
+    .button-group { flex-direction: column; }
+  }
+</style>
+
+<div class="order-container">
+    <h2 class="order-title">🛒 Place Order</h2>
+
+    <form method="POST">
+        {{ form.hidden_tag() }}
+
+        <div class="form-group">
+            {{ form.material.label }}
+            {{ form.material(class="form-control") }}
+        </div>
+
+        <div class="form-group">
+            {{ form.quantity.label }}
+            {{ form.quantity(class="form-control", placeholder="Enter quantity (trucks)") }}
+        </div>
+
+        <div class="form-group">
+            {{ form.drop_area.label }}
+            {{ form.drop_area(class="form-control") }}
+        </div>
+
+        <div class="price-panel" id="price-panel">
+            <div class="price-label">Order Pricing</div>
+            <div class="price-row">
+                <span>Unit price</span>
+                <span id="unit-price">Ksh 0.00</span>
+            </div>
+            <div class="price-row">
+                <span>Quantity</span>
+                <span id="quantity-display">0 truck(s)</span>
+            </div>
+            <div class="price-row">
+                <span class="price-total">Total to pay</span>
+                <span class="price-total" id="total-price">Ksh 0.00</span>
+            </div>
+            <div id="discount-badge" class="price-badge" style="display:none;">Discount price is active for this material.</div>
+        </div>
+
+        <div class="form-group">
+            {{ form.payment_method.label }}
+            {{ form.payment_method(class="form-control", id="payment-method") }}
+        </div>
+
+        <div class="form-group" id="mpesa-phone-group">
+            {{ form.phone_number.label }}
+            {{ form.phone_number(class="form-control", placeholder="07XXXXXXXX or 2547XXXXXXXX") }}
+            {% if form.phone_number.errors %}
+              <div style="color: var(--danger); font-size: 0.85rem; margin-top: 6px;">
+                {{ form.phone_number.errors[0] }}
+              </div>
+            {% endif %}
+            <div style="font-size: 0.85rem; color: var(--text-2); margin-top: 8px;">
+              You will receive an M-Pesa STK prompt immediately after placing the order.
+            </div>
+        </div>
+
+        <div class="form-group" id="paybill-info" style="display:none;">
+          {% if paybill_number %}
+          <div style="padding:12px; border:1px solid var(--border); border-radius:10px; background:var(--surface);">
+            <strong>Paybill Number:</strong> {{ paybill_number }}<br>
+            <span style="font-size:0.85rem; color:var(--text-2);">
+              Pay manually, then admin confirms your payment before the order is sent to a driver.
+            </span>
+          </div>
+          {% else %}
+          <div style="padding:12px; border:1px solid var(--border); border-radius:10px; background:#fff4f4; color:var(--danger);">
+            Paybill is not configured yet. Please contact admin or use M-Pesa.
+          </div>
+          {% endif %}
+        </div>
+
+        {{ form.submit(class="submit-btn") }}
+    </form>
+
+    <div class="button-group">
+        <a href="{{ url_for('auth.home') }}" class="btn btn-secondary">🏠 Home</a>
+        <a href="{{ url_for('customer.dashboard') }}" class="btn btn-secondary">📊 Dashboard</a>
+    </div>
+</div>
+
+<script>
+  const materialPrices = {{ material_prices|safe }};
+  const materialSelect = document.getElementById('{{ form.material.id }}');
+  const quantityInput = document.getElementById('{{ form.quantity.id }}');
+  const paymentMethod = document.getElementById('payment-method');
+  const mpesaPhoneGroup = document.getElementById('mpesa-phone-group');
+  const paybillInfo = document.getElementById('paybill-info');
+  const unitPrice = document.getElementById('unit-price');
+  const quantityDisplay = document.getElementById('quantity-display');
+  const totalPrice = document.getElementById('total-price');
+  const discountBadge = document.getElementById('discount-badge');
+
+  function formatMoney(value) {
+    return `Ksh ${Number(value || 0).toFixed(2)}`;
+  }
+
+  function syncPricePreview() {
+    if (!materialSelect || !quantityInput) return;
+
+    const selected = materialPrices[String(materialSelect.value)];
+    const quantity = Math.max(parseInt(quantityInput.value || '0', 10) || 0, 0);
+
+    if (!selected) {
+      unitPrice.textContent = formatMoney(0);
+      quantityDisplay.textContent = `${quantity} truck(s)`;
+      totalPrice.textContent = formatMoney(0);
+      discountBadge.style.display = 'none';
+      return;
+    }
+
+    const effective = Number(selected.effective_price || 0);
+    unitPrice.textContent = formatMoney(effective);
+    quantityDisplay.textContent = `${quantity} truck(s)`;
+    totalPrice.textContent = formatMoney(effective * quantity);
+    discountBadge.style.display = selected.discount_active ? 'inline-block' : 'none';
+  }
+
+  function syncPaymentFields() {
+    if (!paymentMethod) return;
+    const method = paymentMethod.value;
+    const usePaybill = method === 'Paybill';
+    if (mpesaPhoneGroup) {
+      mpesaPhoneGroup.style.display = usePaybill ? 'none' : 'block';
+    }
+    if (paybillInfo) {
+      paybillInfo.style.display = usePaybill ? 'block' : 'none';
+    }
+  }
+
+  if (paymentMethod) {
+    paymentMethod.addEventListener('change', syncPaymentFields);
+    syncPaymentFields();
+  }
+
+  if (materialSelect) {
+    materialSelect.addEventListener('change', syncPricePreview);
+  }
+
+  if (quantityInput) {
+    quantityInput.addEventListener('input', syncPricePreview);
+  }
+
+  syncPricePreview();
+</script>
+
+{% endblock %}

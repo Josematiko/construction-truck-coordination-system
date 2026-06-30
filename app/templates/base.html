@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Construction Trucks System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* 🔝 Navigation Bar */
+        .navbar {
+            background-color: #2c3e50;
+            padding: 15px 0;
+        }
+        .navbar .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+        .navbar .logo {
+            color: #ecf0f1;
+            font-size: 24px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        .nav-toggle {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #ecf0f1;
+            font-size: 24px;
+            line-height: 1;
+            cursor: pointer;
+        }
+        .nav-drawer {
+            display: contents;
+        }
+        .nav-backdrop {
+            display: none;
+        }
+        .navbar .nav-links {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            gap: 10px;
+        }
+        .navbar .nav-links li {
+            margin-left: 0;
+        }
+        .navbar .nav-links a {
+            color: #ecf0f1;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .navbar .nav-links a:hover {
+            background-color: #34495e;
+        }
+        .navbar .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .navbar .user-actions a {
+            color: #ecf0f1;
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .navbar .user-actions a:hover {
+            background-color: #e74c3c;
+        }
+
+        /* 🔔 Flash Messages */
+        .flash-container {
+            position: fixed;
+            top: -100px; /* hidden initially */
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            width: 90%;
+            max-width: 450px;
+            text-align: center;
+            transition: top 0.5s ease-in-out;
+        }
+
+        .flash-message {
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            border-radius: 12px;
+            font-weight: bold;
+            color: white;
+            font-size: 16px;
+            opacity: 0.95;
+        }
+
+        .flash-message.success { background-color: #28a745; }
+        .flash-message.danger  { background-color: #dc3545; }
+        .flash-message.info    { background-color: #17a2b8; }
+        .flash-message.warning { background-color: #ffc107; color: black; }
+
+        /* 📄 Page Content */
+        .page-content {
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        /* Mobile Responsive Navbar */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 10px 0;
+                position: sticky;
+                top: 0;
+                z-index: 10000;
+            }
+
+            .navbar .container {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0 14px;
+            }
+            
+            .navbar .logo {
+                font-size: 18px;
+                line-height: 1.2;
+                max-width: calc(100% - 58px);
+            }
+
+            .nav-toggle {
+                display: inline-flex;
+                position: relative;
+                z-index: 10002;
+            }
+
+            .nav-backdrop {
+                display: block;
+                position: fixed;
+                inset: 0;
+                background: rgba(15, 23, 42, 0.48);
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 0.25s ease;
+                z-index: 9998;
+            }
+
+            body.nav-open .nav-backdrop {
+                opacity: 1;
+                pointer-events: auto;
+            }
+
+            body.nav-open {
+                overflow: hidden;
+            }
+
+            .nav-drawer {
+                display: flex;
+                flex-direction: column;
+                gap: 18px;
+                position: fixed;
+                top: 0;
+                right: 0;
+                width: min(82vw, 320px);
+                height: 100vh;
+                padding: 76px 18px 22px;
+                background: #24384d;
+                box-shadow: -18px 0 40px rgba(15, 23, 42, 0.3);
+                transform: translateX(100%);
+                transition: transform 0.25s ease;
+                z-index: 10001;
+                overflow-y: auto;
+                pointer-events: auto;
+            }
+
+            body.nav-open .nav-drawer {
+                transform: translateX(0);
+            }
+
+            .navbar .nav-links {
+                width: 100%;
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .navbar .nav-links li {
+                margin: 0;
+            }
+            
+            .navbar .nav-links a {
+                display: block;
+                text-align: center;
+                padding: 13px 12px;
+                font-size: 0.95rem;
+                background: rgba(255, 255, 255, 0.08);
+                border: 1px solid rgba(255, 255, 255, 0.12);
+                border-radius: 8px;
+            }
+            
+            .navbar .user-actions {
+                width: 100%;
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 10px;
+                font-size: 0.9rem;
+            }
+            
+            .navbar .user-actions a {
+                margin: 0;
+                padding: 13px 12px;
+                background: rgba(255, 255, 255, 0.08);
+                font-size: 0.9rem;
+                text-align: center;
+                border-radius: 8px;
+            }
+
+            .navbar .user-actions span {
+                margin-right: 0 !important;
+                text-align: center;
+                padding: 12px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navbar .container {
+                padding: 0 12px;
+            }
+            
+            .navbar .logo {
+                font-size: 17px;
+            }
+            
+            .flash-container {
+                width: 95%;
+                max-width: 300px;
+            }
+            
+            .page-content {
+                padding: 10px;
+            }
+        }
+
+        .ai-assistant {
+            position: fixed;
+            right: 22px;
+            bottom: 22px;
+            z-index: 9998;
+            font-family: Arial, sans-serif;
+        }
+
+        .ai-assistant-panel {
+            width: min(340px, calc(100vw - 28px));
+            max-height: min(560px, calc(100vh - 120px));
+            background: #ffffff;
+            border: 1px solid #d7dde8;
+            border-radius: 14px;
+            box-shadow: 0 18px 45px rgba(15, 23, 42, 0.22);
+            overflow: hidden;
+            display: none;
+            margin-bottom: 12px;
+        }
+
+        .ai-assistant.open .ai-assistant-panel {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ai-assistant-header {
+            background: #1f3a5f;
+            color: #ffffff;
+            padding: 14px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .ai-assistant-title {
+            font-weight: 700;
+            font-size: 15px;
+            line-height: 1.2;
+        }
+
+        .ai-assistant-subtitle {
+            font-size: 12px;
+            opacity: 0.78;
+            margin-top: 2px;
+        }
+
+        .ai-assistant-close,
+        .ai-assistant-toggle,
+        .ai-assistant-send,
+        .ai-assistant-chip {
+            border: 0;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .ai-assistant-close {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.16);
+            color: #ffffff;
+            font-size: 20px;
+            line-height: 1;
+        }
+
+        .ai-assistant-messages {
+            padding: 14px;
+            overflow-y: auto;
+            display: grid;
+            gap: 10px;
+            background: #f5f7fb;
+        }
+
+        .ai-message {
+            max-width: 88%;
+            padding: 10px 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.45;
+        }
+
+        .ai-message.bot {
+            justify-self: start;
+            background: #ffffff;
+            color: #243047;
+            border: 1px solid #dfe5ef;
+        }
+
+        .ai-message.user {
+            justify-self: end;
+            background: #1d4ed8;
+            color: #ffffff;
+        }
+
+        .ai-assistant-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 0 14px 12px;
+            background: #f5f7fb;
+        }
+
+        .ai-assistant-chip {
+            background: #ffffff;
+            color: #1f3a5f;
+            border: 1px solid #cfd8e6;
+            border-radius: 999px;
+            padding: 8px 10px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .ai-assistant-form {
+            display: flex;
+            gap: 8px;
+            padding: 12px;
+            background: #ffffff;
+            border-top: 1px solid #dfe5ef;
+        }
+
+        .ai-assistant-input {
+            flex: 1;
+            min-width: 0;
+            border: 1px solid #cfd8e6;
+            border-radius: 10px;
+            padding: 10px 11px;
+            font-size: 14px;
+        }
+
+        .ai-assistant-send {
+            background: #c07a08;
+            color: #ffffff;
+            border-radius: 10px;
+            padding: 0 14px;
+            font-weight: 700;
+        }
+
+        .ai-assistant-toggle {
+            min-width: 132px;
+            height: 48px;
+            padding: 0 16px;
+            border-radius: 999px;
+            background: #1d4ed8;
+            color: #ffffff;
+            box-shadow: 0 12px 28px rgba(29, 78, 216, 0.32);
+            font-weight: 800;
+            font-size: 14px;
+            float: right;
+        }
+
+        @media (max-width: 480px) {
+            .ai-assistant {
+                right: 14px;
+                bottom: 14px;
+            }
+
+            .ai-assistant-panel {
+                max-height: calc(100vh - 96px);
+            }
+
+            .ai-assistant-toggle {
+                min-width: 128px;
+                height: 46px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 🧭 NAVIGATION BAR -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="{{ url_for('auth.index') }}" class="logo">Construction Trucks</a>
+            <button class="nav-toggle" type="button" aria-label="Open navigation" aria-expanded="false">☰</button>
+            <div class="nav-drawer" id="nav-drawer">
+                <ul class="nav-links">
+                    {% if request.endpoint == 'auth.index' %}
+                        <li><a href="{{ url_for('auth.about') }}">About</a></li>
+                    {% else %}
+                        <li><a href="{{ url_for('auth.index') }}">Home</a></li>
+                    {% endif %}
+                    {% if current_user.is_authenticated %}
+                        <li><a href="{{ url_for('auth.home') }}">Dashboard</a></li>
+                    {% endif %}
+                    <li><a href="{{ url_for('auth.help') }}">Help</a></li>
+                    <li><a href="{{ url_for('auth.contacts') }}">Contacts</a></li>
+                </ul>
+                <div class="user-actions">
+                    {% if current_user.is_authenticated %}
+                        <span style="color: #ecf0f1; margin-right: 10px;">{{ current_user.first_name }} ({{ current_user.role }})</span>
+                        <a href="{{ url_for('auth.change_password') }}">Change Password</a>
+                        <a href="{{ url_for('auth.logout') }}">Logout</a>
+                    {% else %}
+                        <a href="{{ url_for('auth.login') }}">Login</a>
+                        <a href="{{ url_for('auth.register') }}">Register</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+    <button class="nav-backdrop" type="button" aria-label="Close navigation"></button>
+
+    <!-- 🔔 FLASH MESSAGES -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-container" id="flash-container">
+          {% for category, message in messages %}
+            <div class="flash-message {{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- 📄 PAGE CONTENT -->
+    <div class="page-content">
+        {% block content %}{% endblock %}
+    </div>
+
+    {% if request.endpoint in ['auth.index', 'auth.help'] %}
+    <div class="ai-assistant" id="ai-assistant">
+        <div class="ai-assistant-panel" aria-live="polite">
+            <div class="ai-assistant-header">
+                <div>
+                    <div class="ai-assistant-title">AI Assistant</div>
+                    <div class="ai-assistant-subtitle">Quick help for common system tasks</div>
+                </div>
+                <button class="ai-assistant-close" type="button" aria-label="Close assistant">&times;</button>
+            </div>
+            <div class="ai-assistant-messages" id="ai-assistant-messages">
+                <div class="ai-message bot">Hi. Ask about orders, payments, login, drivers, truck owners, admin tasks, or support contacts.</div>
+            </div>
+            <div class="ai-assistant-chips">
+                <button class="ai-assistant-chip" type="button" data-question="How do I place an order?">Place order</button>
+                <button class="ai-assistant-chip" type="button" data-question="How do payments work?">Payments</button>
+                <button class="ai-assistant-chip" type="button" data-question="Why can I not chat?">Chat help</button>
+                <button class="ai-assistant-chip" type="button" data-question="I need support contacts">Contact support</button>
+            </div>
+            <form class="ai-assistant-form" id="ai-assistant-form">
+                <input class="ai-assistant-input" id="ai-assistant-input" type="text" placeholder="Type your question..." autocomplete="off">
+                <button class="ai-assistant-send" type="submit">Send</button>
+            </form>
+        </div>
+        <button class="ai-assistant-toggle" type="button" aria-label="Open AI assistant">Need Help?</button>
+    </div>
+    {% endif %}
+
+    <!-- ⏱ AUTO SLIDE AND HIDE MESSAGES -->
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('flash-container');
+            if(container){
+                // Slide down
+                container.style.top = '20px';
+
+                // Auto hide after 3s
+                setTimeout(() => {
+                    container.style.top = '-100px';
+                    setTimeout(() => container.remove(), 500); // Remove from DOM
+                }, 3000);
+            }
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const navToggle = document.querySelector('.nav-toggle');
+            const navBackdrop = document.querySelector('.nav-backdrop');
+            const navDrawer = document.getElementById('nav-drawer');
+
+            if (!navToggle || !navBackdrop || !navDrawer) {
+                return;
+            }
+
+            function setNavOpen(isOpen) {
+                document.body.classList.toggle('nav-open', isOpen);
+                navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+                navToggle.textContent = isOpen ? '×' : '☰';
+            }
+
+            navToggle.addEventListener('click', function() {
+                setNavOpen(!document.body.classList.contains('nav-open'));
+            });
+
+            navBackdrop.addEventListener('click', function() {
+                setNavOpen(false);
+            });
+
+            navDrawer.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', function() {
+                    setNavOpen(false);
+                });
+            });
+
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape') {
+                    setNavOpen(false);
+                }
+            });
+        });
+    </script>
+
+    <!-- Global Form Submission Loading Handler -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Prevent multiple form submissions on submit buttons
+            const forms = document.querySelectorAll('form');
+            forms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    if (form.classList.contains('ai-assistant-form')) {
+                        return;
+                    }
+
+                    const submitBtn = form.querySelector('button[type="submit"], input[type="submit"]');
+                    if (submitBtn) {
+                        // Store original text
+                        const originalText = submitBtn.textContent || submitBtn.value;
+                        
+                        // Disable button and show loading
+                        submitBtn.disabled = true;
+                        submitBtn.style.opacity = '0.6';
+                        submitBtn.style.cursor = 'not-allowed';
+                        submitBtn.textContent = '⏳ Processing...';
+                        
+                        // Re-enable after a delay if form doesn't submit (fallback)
+                        setTimeout(() => {
+                            submitBtn.disabled = false;
+                            submitBtn.style.opacity = '1';
+                            submitBtn.style.cursor = 'pointer';
+                            submitBtn.textContent = originalText;
+                        }, 30000); // 30 second fallback
+                    }
+                });
+            });
+        });
+    </script>
+
+    {% if request.endpoint in ['auth.index', 'auth.help'] %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const assistant = document.getElementById('ai-assistant');
+            if (!assistant) {
+                return;
+            }
+
+            const toggle = assistant.querySelector('.ai-assistant-toggle');
+            const close = assistant.querySelector('.ai-assistant-close');
+            const form = document.getElementById('ai-assistant-form');
+            const input = document.getElementById('ai-assistant-input');
+            const messages = document.getElementById('ai-assistant-messages');
+            const chips = assistant.querySelectorAll('.ai-assistant-chip');
+
+            const answers = [
+                {
+                    keys: ['order', 'place', 'material', 'quantity'],
+                    text: 'To place an order, log in as a customer, open the customer dashboard, choose a material, enter quantity and delivery area, then select your payment method.'
+                },
+                {
+                    keys: ['pay', 'payment', 'mpesa', 'm-pesa', 'paybill', 'stk'],
+                    text: 'M-Pesa STK needs a valid Safaricom number in 07XXXXXXXX or 2547XXXXXXXX format. Paybill payments remain pending until an admin confirms them.'
+                },
+                {
+                    keys: ['chat', 'message', 'driver'],
+                    text: 'Chat becomes available after a driver has been assigned to the order. If payment or assignment is still pending, chat will stay closed.'
+                },
+                {
+                    keys: ['login', 'password', 'account', 'register'],
+                    text: 'For login problems, check your email and password first. You can use Forgot Password on the login page, or open Contacts for support.'
+                },
+                {
+                    keys: ['admin', 'confirm', 'approval', 'approve'],
+                    text: 'Admins handle paybill confirmation, review moderation, driver approval, truck approval, and completed delivery approval from the admin dashboard.'
+                },
+                {
+                    keys: ['owner', 'truck', 'fleet'],
+                    text: 'Truck owners can register trucks, wait for admin approval, and review truck activity from the owner dashboard.'
+                },
+                {
+                    keys: ['contact', 'support', 'help', 'call'],
+                    text: 'For direct help, open the Contacts page from the navigation menu. Use it for account, order, payment, and general support questions.'
+                }
+            ];
+
+            function addMessage(text, type) {
+                const bubble = document.createElement('div');
+                bubble.className = 'ai-message ' + type;
+                bubble.textContent = text;
+                messages.appendChild(bubble);
+                messages.scrollTop = messages.scrollHeight;
+            }
+
+            function getAnswer(question) {
+                const clean = question.toLowerCase();
+                const match = answers.find(item => item.keys.some(key => clean.includes(key)));
+                if (match) {
+                    return match.text;
+                }
+                return 'I can help with orders, payments, login, chat, driver assignment, truck owner tasks, and admin approvals. For anything urgent, please use the Contacts page.';
+            }
+
+            function ask(question) {
+                const trimmed = question.trim();
+                if (!trimmed) {
+                    return;
+                }
+                addMessage(trimmed, 'user');
+                setTimeout(() => addMessage(getAnswer(trimmed), 'bot'), 180);
+                input.value = '';
+            }
+
+            toggle.addEventListener('click', function() {
+                assistant.classList.toggle('open');
+                if (assistant.classList.contains('open')) {
+                    input.focus();
+                }
+            });
+
+            close.addEventListener('click', function() {
+                assistant.classList.remove('open');
+            });
+
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                ask(input.value);
+            });
+
+            chips.forEach(chip => {
+                chip.addEventListener('click', function() {
+                    ask(chip.dataset.question || chip.textContent);
+                });
+            });
+        });
+    </script>
+    {% endif %}
+
+    {% if current_user.is_authenticated %}
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js" crossorigin="anonymous"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const socket = io();
+
+            socket.on('connect', function() {
+                console.log('Connected to socket server, user is online.');
+            });
+
+            socket.on('disconnect', function() {
+                console.log('Disconnected from socket server, user is offline.');
+            });
+
+            socket.on('user_status_changed', function(data) {
+                const target = document.querySelector(`[data-presence-user="${data.user_id}"]`);
+                if (!target) {
+                    return;
+                }
+                target.textContent = data.status === 'online' ? `${data.user_name} Online` : `${data.user_name} Offline`;
+                target.classList.toggle('online', data.status === 'online');
+                target.classList.toggle('offline', data.status !== 'online');
+            });
+
+            window.addEventListener('beforeunload', function() {
+                socket.disconnect();
+            });
+        });
+    </script>
+    {% endif %}
+
+</body>
+</html>

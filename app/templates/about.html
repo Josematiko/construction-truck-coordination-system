@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .page-container {
+        max-width: 900px;
+        margin: 50px auto;
+        padding: 20px;
+    }
+
+    .info-card {
+        background: #ffffff;
+        border: 1px solid #dee2e6;
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+    }
+
+    .section-title {
+        text-align: center;
+        color: #343a40;
+        font-size: 2rem;
+        margin-bottom: 12px;
+    }
+
+    .section-intro {
+        color: #6c757d;
+        text-align: center;
+        margin-bottom: 24px;
+    }
+
+    .feature-list {
+        list-style: none;
+        padding-left: 0;
+        margin: 0;
+        display: grid;
+        gap: 14px;
+    }
+
+    .feature-list li {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 12px;
+        padding: 16px 18px;
+        color: #495057;
+    }
+
+    .section-heading {
+        margin-top: 28px;
+        color: #495057;
+        font-size: 1.1rem;
+    }
+
+    .section-paragraph {
+        color: #6c757d;
+        line-height: 1.8;
+    }
+
+    .link-inline {
+        color: #6c757d;
+        text-decoration: none;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .link-inline:hover {
+        color: #343a40;
+    }
+</style>
+
+<div class="page-container">
+    <div class="info-card">
+        <h1 class="section-title">About Construction Trucks System</h1>
+        <p class="section-intro">A powerful platform for managing construction logistics, communication, and fleet operations.</p>
+
+        <h3 class="section-heading">Our Mission</h3>
+        <p class="section-paragraph">To streamline the construction industry by providing an efficient, reliable, and user-friendly platform that connects customers, drivers, truck owners, and administrators in a seamless ecosystem.</p>
+
+        <h3 class="section-heading">What We Offer</h3>
+        <ul class="feature-list">
+            <li><strong>Truck Management:</strong> Real-time management of your fleet.</li>
+            <li><strong>Driver Coordination:</strong> Assign drivers, approve licenses, and ensure compliance.</li>
+            <li><strong>Material Orders:</strong> Easy placement and tracking of construction material orders.</li>
+            <li><strong>Real-Time Chat:</strong> Direct communication between customers and drivers.</li>
+            <li><strong>Admin Controls:</strong> Comprehensive management of users, materials, and locations.</li>
+            <li><strong>Reports & Analytics:</strong> Insights for truck owners to optimize operations.</li>
+        </ul>
+
+        <h3 class="section-heading">Our Team</h3>
+        <p class="section-paragraph">Built by a team of developers passionate about improving the construction industry through technology. We understand the challenges of material transportation and have created this system to make it easier for everyone involved.</p>
+
+        <h3 class="section-heading">Contact Us</h3>
+        <p class="section-paragraph">Have questions or feedback? Visit our <a href="{{ url_for('auth.contacts') }}" class="link-inline">Contacts</a> page to get in touch.</p>
+    </div>
+</div>
+{% endblock %}

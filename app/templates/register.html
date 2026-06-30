@@ -1,0 +1,347 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+  :root {
+    --page-bg: #e8eaf0;
+    --surface: #f2f4f8;
+    --surface-alt: #ffffff;
+    --border: #ced3de;
+    --text-1: #1c2235;
+    --text-2: #4b5563;
+    --accent: #2563eb;
+    --accent-soft: rgba(37,99,235,0.12);
+    --shadow: 0 16px 30px rgba(15,23,42,0.08);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Barlow', sans-serif; background: var(--page-bg); color: var(--text-1); }
+
+  .form-container {
+    max-width: 620px;
+    margin: 44px auto;
+    padding: 36px;
+    border-radius: 24px;
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+
+  .form-title {
+    text-align: center;
+    color: var(--text-1);
+    margin-bottom: 28px;
+    font-size: 2rem;
+    font-weight: 800;
+  }
+
+  .form-group { margin-bottom: 20px; }
+
+  .form-group label {
+    display: block;
+    font-weight: 700;
+    color: var(--text-2);
+    margin-bottom: 8px;
+  }
+
+  .form-control,
+  select {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-1);
+    font-size: 1rem;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .form-control:focus,
+  select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-soft);
+  }
+
+  .password-wrapper { position: relative; }
+
+  .toggle-btn {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: var(--accent);
+    font-weight: 700;
+    user-select: none;
+  }
+
+  .btn-submit {
+    width: 100%;
+    padding: 14px;
+    background: var(--accent);
+    border: none;
+    color: var(--surface-alt);
+    border-radius: 16px;
+    font-weight: 800;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.25s ease, transform 0.25s ease;
+  }
+
+  .btn-submit:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+  }
+
+  .btn-submit:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+    opacity: 0.8;
+  }
+
+  .driver-fields {
+    background: var(--surface);
+    padding: 18px;
+    border-radius: 18px;
+    border-left: 4px solid rgba(249,166,2,0.25);
+    margin-bottom: 20px;
+  }
+
+  .driver-fields .form-group label { color: var(--text-2); }
+
+  .divider {
+    text-align: center;
+    margin: 22px 0;
+    color: var(--text-2);
+  }
+
+  .login-link {
+    text-align: center;
+    margin-top: 22px;
+    font-size: 0.95rem;
+  }
+
+  .login-link a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 700;
+  }
+
+  .login-link a:hover { text-decoration: underline; }
+
+  .form-error {
+    color: #dc2626;
+    font-size: 0.95rem;
+    margin-top: 6px;
+  }
+
+  @media (max-width: 768px) {
+    .form-container { padding: 28px; }
+    .form-title { font-size: 1.75rem; }
+    .form-control, select { padding: 12px 14px; }
+    .btn-submit { padding: 12px; }
+  }
+
+  @media (max-width: 480px) {
+    .form-container { margin: 28px auto; padding: 22px; }
+    .form-title { font-size: 1.5rem; margin-bottom: 20px; }
+    .form-control, select { font-size: 0.95rem; }
+    .toggle-btn { right: 12px; font-size: 0.85rem; }
+    .login-link { font-size: 0.9rem; }
+  }
+</style>
+
+<script>
+function togglePassword(fieldId, el) {
+    const input = document.getElementById(fieldId);
+    if (input.type === "password") {
+        input.type = "text";
+        el.textContent = "Hide";
+    } else {
+        input.type = "password";
+        el.textContent = "Show";
+    }
+}
+
+function validatePhone(input) {
+    let value = input.value.replace(/[^+\d]/g, '');
+    
+    if (value.includes('+') && value.indexOf('+') !== 0) {
+        value = value.replace(/\+/g, '');
+    }
+    
+    if (value.length > 13) {
+        value = value.substring(0, 13);
+    }
+    
+    if (value.startsWith('+') && value.length === 1) {
+        value = '+';
+    }
+    
+    input.value = value;
+}
+</script>
+
+<style>
+    .btn-submit {
+        padding: 10px;
+        font-size: 0.95em;
+    }
+    
+    .toggle-btn {
+        right: 8px;
+        font-size: 12px;
+    }
+    
+    p {
+        font-size: 0.9em;
+    }
+</style>
+
+<div class="form-container">
+    <h2 class="form-title">Create Account</h2>
+
+    <form method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+
+        {% if form.errors %}
+          <div class="form-error" style="margin-bottom:16px;">Please correct the highlighted fields below.</div>
+        {% endif %}
+
+        <div class="form-group">
+            {{ form.first_name.label }}
+            {{ form.first_name(class="form-control", placeholder="First name", pattern="[A-Za-z\s]+", oninput="validateName(this)") }}
+            {% if form.first_name.errors %}
+              <div class="form-error">{{ form.first_name.errors[0] }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form.middle_name.label }}
+            {{ form.middle_name(class="form-control", placeholder="Middle name (optional)", pattern="[A-Za-z\\s]*", oninput="validateName(this)") }}
+            {% if form.middle_name.errors %}
+              <div class="form-error">{{ form.middle_name.errors[0] }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form.last_name.label }}
+            {{ form.last_name(class="form-control", placeholder="Last name", pattern="[A-Za-z\s]+", oninput="validateName(this)") }}
+            {% if form.last_name.errors %}
+              <div class="form-error">{{ form.last_name.errors[0] }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form.email.label }}
+            {{ form.email(class="form-control", placeholder="Email address") }}
+        </div>
+
+        <div class="form-group">
+            {{ form.phone.label }}
+            {{ form.phone(class="form-control", placeholder="Phone number", id="phone", oninput="validatePhone(this)") }}
+        </div>
+
+        <!-- Password -->
+        <div class="form-group">
+            {{ form.password.label }}
+            <div class="password-wrapper">
+                {{ form.password(class="form-control", id="password", placeholder="Enter password") }}
+                <span class="toggle-btn" onclick="togglePassword('password', this)">Show</span>
+            </div>
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="form-group">
+            {{ form.confirm_password.label }}
+            <div class="password-wrapper">
+                {{ form.confirm_password(class="form-control", id="confirm_password", placeholder="Confirm password") }}
+                <span class="toggle-btn" onclick="togglePassword('confirm_password', this)">Show</span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            {{ form.role.label }}
+            <select name="{{ form.role.name }}" class="form-control" id="role-select">
+                {% for val, label in form.role.choices %}
+                    <option value="{{ val }}" {% if not val %}disabled selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Driver-specific fields -->
+        <div id="driver-fields" style="display: none;">
+            <div class="form-group">
+                {{ form.license_number.label }}
+                {{ form.license_number(class="form-control", placeholder="Enter your license number") }}
+            </div>
+
+            <div class="form-group">
+                {{ form.license_photo.label }}
+                {{ form.license_photo(class="form-control") }}
+                <small class="text-muted">Upload a photo of your driving license (JPG, PNG, JPEG only)</small>
+            </div>
+        </div>
+
+        {{ form.submit(class="btn-submit") }}
+    </form>
+
+    <p style="text-align:center; margin-top:15px;">
+        Already have an account?
+        <a href="{{ url_for('auth.login') }}" style="color:#f57c00;">Login here</a>
+    </p>
+</div>
+
+<script>
+function togglePassword(fieldId, el) {
+    const input = document.getElementById(fieldId);
+    if (input.type === "password") {
+        input.type = "text";
+        el.textContent = "Hide";
+    } else {
+        input.type = "password";
+        el.textContent = "Show";
+    }
+}
+
+function validateName(input) {
+    input.value = input.value.replace(/[^A-Za-z\s]/g, '');
+}
+
+function validatePhone(input) {
+    // Remove any characters that are not + or digits
+    let value = input.value.replace(/[^+\d]/g, '');
+    
+    // Ensure + is only at the start
+    if (value.includes('+') && value.indexOf('+') !== 0) {
+        value = value.replace(/\+/g, ''); // Remove all +, then add at start if needed
+    }
+    
+    // Limit to 13 characters (12 digits + optional +)
+    if (value.length > 13) {
+        value = value.substring(0, 13);
+    }
+    
+    // If starts with +, ensure at least one digit after
+    if (value.startsWith('+') && value.length === 1) {
+        value = '+';
+    }
+    
+    input.value = value;
+}
+
+// Show/hide driver fields based on role selection
+const roleSelect = document.getElementById('role-select');
+const driverFields = document.getElementById('driver-fields');
+if (roleSelect && driverFields) {
+    const updateDriverFields = () => {
+        driverFields.style.display = roleSelect.value === 'driver' ? 'block' : 'none';
+    };
+    roleSelect.addEventListener('change', updateDriverFields);
+    updateDriverFields();
+}
+</script>
+
+{% endblock %}

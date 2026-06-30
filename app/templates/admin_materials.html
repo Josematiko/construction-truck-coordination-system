@@ -1,0 +1,286 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;800&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --page-bg:#e8eaf0;
+    --surface:#f2f4f8;
+    --surface-2:#e4e7ee;
+    --border:#ced3de;
+    --border-2:#b8bfcf;
+    --text-1:#1c2235;
+    --text-2:#3d4665;
+    --text-3:#6e7a9a;
+    --text-4:#9aa2b8;
+    --amber:#c07a08;
+    --amber-bg:rgba(192,122,8,0.09);
+    --amber-br:rgba(192,122,8,0.28);
+    --blue:#1a60b0;
+    --blue-bg:rgba(26,96,176,0.08);
+    --blue-br:rgba(26,96,176,0.24);
+    --red:#b02828;
+    --red-bg:rgba(176,40,40,0.07);
+    --red-br:rgba(176,40,40,0.24);
+  }
+
+  body { font-family:'Barlow',sans-serif; background:var(--page-bg); }
+
+  .page-wrap {
+    max-width:1100px;
+    margin:0 auto;
+    padding:48px 32px 80px;
+  }
+
+  /* HEADER */
+  .page-header {
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    margin-bottom:40px;
+    border-bottom:1px solid var(--border);
+    padding-bottom:24px;
+    flex-wrap:wrap;
+    gap:16px;
+  }
+
+  .page-eyebrow {
+    font-family:'Barlow Condensed';
+    font-size:.7rem;
+    letter-spacing:.2em;
+    text-transform:uppercase;
+    color:var(--amber);
+    margin-bottom:6px;
+  }
+
+  .page-header h1 {
+    font-family:'Barlow Condensed';
+    font-size:2.3rem;
+    font-weight:800;
+    text-transform:uppercase;
+  }
+
+  .page-header span { color:var(--amber); }
+
+  .back-link {
+    text-decoration:none;
+    border:1px solid var(--border-2);
+    padding:8px 16px;
+    font-size:.75rem;
+    text-transform:uppercase;
+    color:var(--text-3);
+  }
+
+  /* INFO BAR */
+  .info-bar {
+    background:var(--blue-bg);
+    border:1px solid var(--blue-br);
+    padding:14px 18px;
+    margin-bottom:28px;
+    font-size:.85rem;
+    color:var(--blue);
+  }
+
+  /* CARD */
+  .card {
+    background:var(--surface);
+    border:1px solid var(--border);
+    padding:22px;
+    margin-bottom:24px;
+  }
+
+  /* BUTTON */
+  .btn {
+    font-family:'Barlow Condensed';
+    text-transform:uppercase;
+    font-size:.75rem;
+    letter-spacing:.1em;
+    border:none;
+    padding:10px 18px;
+    cursor:pointer;
+  }
+
+  .btn-primary {
+    background:var(--amber);
+    color:#fff;
+  }
+
+  .btn-danger {
+    background:var(--red-bg);
+    color:var(--red);
+    border:1px solid var(--red-br);
+  }
+
+  /* FORM */
+  .form-grid {
+    display:grid;
+    gap:16px;
+  }
+
+  .form-control {
+    width:100%;
+    padding:10px;
+    border:1px solid var(--border);
+    background:#fff;
+  }
+
+  /* MATERIAL LIST */
+  .material-item {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:16px;
+    border-bottom:1px solid var(--border);
+  }
+
+  .material-name {
+    font-family:'Barlow Condensed';
+    font-weight:700;
+  }
+
+  .material-price {
+    font-size:.85rem;
+    color:var(--text-3);
+  }
+
+  .material-actions a {
+    margin-left:12px;
+    font-size:.8rem;
+    text-decoration:none;
+  }
+
+  .edit-link { color:var(--blue); }
+  .delete-link { color:var(--red); }
+
+  .empty-state {
+    text-align:center;
+    padding:40px;
+    color:var(--text-4);
+  }
+</style>
+
+<div class="page-wrap">
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <div>
+      <div class="page-eyebrow">Admin — Materials</div>
+      <h1>Manage <span>Materials</span></h1>
+    </div>
+    <a href="{{ url_for('admin.dashboard') }}" class="back-link">Back</a>
+  </div>
+
+  <!-- INFO -->
+  <div class="info-bar">
+    Add new materials, edit existing ones, or remove them from the system.
+  </div>
+
+  <!-- ACTION -->
+  <div class="card">
+    {% if editing_material %}
+      <a href="{{ url_for('admin.manage_materials') }}" class="btn btn-primary" style="text-decoration:none;display:inline-block;">+ Add New Material</a>
+    {% else %}
+      <button id="toggle-form" class="btn btn-primary">+ Add Material</button>
+    {% endif %}
+  </div>
+
+  <!-- FORM -->
+  <div id="form-card" class="card" style="{% if editing_material or form.errors %}display:block;{% else %}display:none;{% endif %}">
+    <form method="POST" action="{{ url_for('admin.edit_material', material_id=editing_material.id) if editing_material else url_for('admin.manage_materials') }}">
+      <h3 style="margin-bottom:14px; font-family:'Barlow Condensed'; text-transform:uppercase;">
+        {% if editing_material %}Edit Material{% else %}Add Material{% endif %}
+      </h3>
+      {{ form.hidden_tag() }}
+
+      <div class="form-grid">
+        <div>
+          {{ form.name.label }}
+          {{ form.name(class="form-control") }}
+          {% if form.name.errors %}
+            <div style="color:var(--red); font-size:.8rem; margin-top:6px;">{{ form.name.errors[0] }}</div>
+          {% endif %}
+        </div>
+
+        <div>
+          {{ form.price.label }}
+          {{ form.price(class="form-control") }}
+          {% if form.price.errors %}
+            <div style="color:var(--red); font-size:.8rem; margin-top:6px;">{{ form.price.errors[0] }}</div>
+          {% endif %}
+        </div>
+
+        <div>
+          {{ form.discount_price.label }}
+          {{ form.discount_price(class="form-control") }}
+          {% if form.discount_price.errors %}
+            <div style="color:var(--red); font-size:.8rem; margin-top:6px;">{{ form.discount_price.errors[0] }}</div>
+          {% endif %}
+        </div>
+        <div>
+          {{ form.discount_start.label }}
+          {{ form.discount_start(class="form-control") }}
+          {% if form.discount_start.errors %}
+            <div style="color:var(--red); font-size:.8rem; margin-top:6px;">{{ form.discount_start.errors[0] }}</div>
+          {% endif %}
+        </div>
+        <div>
+          {{ form.discount_end.label }}
+          {{ form.discount_end(class="form-control") }}
+          {% if form.discount_end.errors %}
+            <div style="color:var(--red); font-size:.8rem; margin-top:6px;">{{ form.discount_end.errors[0] }}</div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div style="margin-top:16px;">
+        {{ form.submit(class="btn btn-primary", value="Update Material" if editing_material else "Save Material") }}
+        {% if editing_material %}
+          <a href="{{ url_for('admin.manage_materials') }}" class="btn btn-danger" style="text-decoration:none; display:inline-block;">Cancel</a>
+        {% endif %}
+      </div>
+    </form>
+  </div>
+
+  <!-- MATERIAL LIST -->
+  <div class="card">
+    {% for material in materials %}
+    <div class="material-item">
+      <div>
+        <div class="material-name">{{ material.name }}</div>
+        <div class="material-price">
+          Ksh {{ material.price }}
+          {% if material.discount_price %}
+            | Discount: {{ material.discount_price }}
+            {% if material.discount_start and material.discount_end %}
+              | Valid: {{ material.discount_start.strftime('%Y-%m-%d') }} to {{ material.discount_end.strftime('%Y-%m-%d') }}
+            {% endif %}
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="material-actions">
+        <a href="{{ url_for('admin.edit_material', material_id=material.id) }}" class="edit-link">Edit</a>
+        <a href="{{ url_for('admin.delete_material', material_id=material.id) }}" class="delete-link"
+           onclick="return confirm('Delete this material?');">Delete</a>
+      </div>
+    </div>
+    {% else %}
+    <div class="empty-state">No materials added yet.</div>
+    {% endfor %}
+  </div>
+
+</div>
+
+<script>
+const btn = document.getElementById('toggle-form');
+const form = document.getElementById('form-card');
+
+if (btn && form) {
+  btn.onclick = () => {
+    form.style.display = form.style.display === 'none' ? 'block' : 'none';
+  };
+}
+</script>
+
+{% endblock %}

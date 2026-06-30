@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+  :root {
+    --page-bg:#e8eaf0;
+    --surface:#f2f4f8;
+    --surface-2:#e4e7ee;
+    --border:#ced3de;
+    --text-1:#1c2235;
+    --text-2:#3d4665;
+    --text-3:#6e7a9a;
+    --green:#177a48;
+    --green-bg:rgba(23,122,72,0.08);
+    --amber:#c07a08;
+    --amber-bg:rgba(192,122,8,0.09);
+    --blue:#1a60b0;
+  }
+
+  body { font-family:'Barlow',sans-serif; background:var(--page-bg); }
+  .page-wrap { max-width:1100px; margin:0 auto; padding:42px 28px 70px; }
+  .page-header { display:flex; justify-content:space-between; align-items:flex-end; gap:12px; flex-wrap:wrap; margin-bottom:26px; border-bottom:1px solid var(--border); padding-bottom:16px; }
+  .page-title { font-family:'Barlow Condensed',sans-serif; text-transform:uppercase; font-size:2rem; font-weight:800; color:var(--text-1); }
+  .sub { color:var(--text-3); font-size:.9rem; }
+  .btn-back { text-decoration:none; color:#fff; background:var(--blue); padding:10px 16px; border-radius:4px; font-size:.8rem; text-transform:uppercase; font-weight:700; }
+
+  .order-card { background:var(--surface); border:1px solid var(--border); padding:16px; margin-bottom:14px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:10px; margin-top:10px; }
+  .cell { background:#fff; border:1px solid var(--border); padding:10px; }
+  .label { font-size:.68rem; text-transform:uppercase; color:var(--text-3); }
+  .value { font-size:.9rem; color:var(--text-1); }
+  .badge { display:inline-block; font-size:.7rem; text-transform:uppercase; padding:4px 10px; border-radius:3px; font-weight:700; }
+  .badge-complete { background:var(--green-bg); color:var(--green); }
+  .badge-pending { background:var(--amber-bg); color:var(--amber); }
+  .empty { background:var(--surface); border:1px solid var(--border); text-align:center; color:var(--text-3); padding:40px; }
+  .report-toolbar { background:var(--surface); border:1px solid var(--border); padding:16px; margin-bottom:22px; display:flex; align-items:end; gap:12px; flex-wrap:wrap; }
+  .filter-field { display:grid; gap:5px; }
+  .filter-field label { font-size:.68rem; color:var(--text-3); text-transform:uppercase; font-weight:700; letter-spacing:.1em; }
+  .filter-field input { padding:10px; border:1px solid var(--border); background:#fff; color:var(--text-1); }
+  .toolbar-btn { border:0; text-decoration:none; padding:11px 16px; background:var(--blue); color:#fff; font-weight:700; cursor:pointer; border-radius:4px; }
+  .toolbar-btn.secondary { background:#fff; color:var(--text-1); border:1px solid var(--border); }
+
+  @media print {
+    .navbar, .flash-container, .report-toolbar, .btn-back, .ai-assistant { display:none !important; }
+    .page-content { padding:0 !important; margin:0 !important; }
+    .page-wrap { max-width:none; padding:0; }
+    body { background:#fff; }
+  }
+</style>
+
+<div class="page-wrap">
+  <div class="page-header">
+    <div>
+      <div class="page-title">My Completed Orders</div>
+      <div class="sub">Deliveries you have finished</div>
+    </div>
+    <a href="{{ url_for('driver.dashboard') }}" class="btn-back">Back to Dashboard</a>
+  </div>
+
+  <form class="report-toolbar" method="get">
+    <div class="filter-field">
+      <label for="start_date">From Date</label>
+      <input id="start_date" name="start_date" type="date" value="{{ start_date }}">
+    </div>
+    <div class="filter-field">
+      <label for="end_date">To Date</label>
+      <input id="end_date" name="end_date" type="date" value="{{ end_date }}">
+    </div>
+    <button class="toolbar-btn" type="submit">Show Orders</button>
+    <a class="toolbar-btn secondary" href="{{ url_for('driver.completed_orders') }}">Reset</a>
+    <button class="toolbar-btn secondary" type="button" onclick="window.print()">Print as PDF</button>
+  </form>
+
+  {% if orders %}
+    {% for order in orders %}
+    <div class="order-card">
+      <strong>Order #{{ order.id }} - {{ order.material.name if order.material else 'N/A' }}</strong>
+      <div style="margin-top:8px;">
+        {% if order.status == 'Completed' %}
+          <span class="badge badge-complete">Completed</span>
+        {% else %}
+          <span class="badge badge-pending">{{ order.status }}</span>
+        {% endif %}
+      </div>
+      <div class="grid">
+        <div class="cell">
+          <div class="label">Quantity</div>
+          <div class="value">{{ order.quantity }}</div>
+        </div>
+        <div class="cell">
+          <div class="label">Total Price</div>
+          <div class="value">Ksh {{ order.total_price }}</div>
+        </div>
+        <div class="cell">
+          <div class="label">Drop Location</div>
+          <div class="value">{{ order.drop_location.name if order.drop_location else 'N/A' }}</div>
+        </div>
+        <div class="cell">
+          <div class="label">Completed At</div>
+          <div class="value">{{ order.completed_at.strftime('%Y-%m-%d %H:%M') if order.completed_at else 'N/A' }}</div>
+        </div>
+        <div class="cell">
+          <div class="label">Customer</div>
+          <div class="value">{{ order.customer.full_name() if order.customer else 'N/A' }}</div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="empty">No completed deliveries yet.</div>
+  {% endif %}
+</div>
+{% endblock %}

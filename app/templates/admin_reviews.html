@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-wrap" style="max-width:980px; margin:50px auto; padding:40px 32px;">
+  <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:30px;">
+    <div>
+      <div style="font-size:.8rem; text-transform:uppercase; letter-spacing:.22em; color:#c07a08; margin-bottom:10px;">Admin — Review Moderation</div>
+      <h1 style="font-family:'Barlow Condensed',sans-serif; font-size:2.4rem; margin:0;">Customer <span style="color:#c07a08;">Reviews</span></h1>
+    </div>
+    <a href="{{ url_for('admin.dashboard') }}" style="color:#55617d; text-decoration:none; border:1px solid #dfe3ea; padding:10px 18px; border-radius:4px;">Back to Dashboard</a>
+  </div>
+
+  {% if reviews %}
+  <div style="display:grid; gap:16px;">
+    {% for review in reviews %}
+    <div style="background:#fff; border:1px solid #dee2e6; border-radius:14px; padding:24px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px;">
+        <div>
+          <div style="font-size:1rem; font-weight:700; color:#1c2235;">{{ review.customer.full_name() if review.customer else 'Customer' }}</div>
+          <div style="color:#6e7a9a; font-size:.92rem;">Order #{{ review.order_id }} • {{ review.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
+        </div>
+        <span style="font-weight:700; color:#c07a08;">{{ review.rating }}/5</span>
+      </div>
+      <p style="margin-bottom:18px; color:#4b5563;">{{ review.comment or 'No comment provided.' }}</p>
+      <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px; align-items:center;">
+        <div style="color:#6e7a9a; font-size:.88rem;">Visible publicly: <strong>{{ 'Yes' if review.is_displayed else 'No' }}</strong></div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          {% if not review.is_displayed %}
+          <a href="{{ url_for('admin.review_action', rating_id=review.id, action='approve') }}" style="background:#1a60b0; color:#fff; padding:10px 18px; border-radius:8px; text-decoration:none;">Display</a>
+          {% endif %}
+          <a href="{{ url_for('admin.review_action', rating_id=review.id, action='hide') }}" style="background:#f4f4f4; color:#c0372f; padding:10px 18px; border-radius:8px; text-decoration:none;">Hide</a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div style="background:#fff; border:1px solid #dee2e6; border-radius:14px; padding:32px; text-align:center; color:#6e7a9a;">No customer reviews have been submitted yet.</div>
+  {% endif %}
+</div>
+{% endblock %}

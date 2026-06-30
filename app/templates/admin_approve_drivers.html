@@ -1,0 +1,374 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;800&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --page-bg:   #eef0f5;
+    --surface:   #ffffff;
+    --surface-2: #f5f6f9;
+    --border:    #dde1ea;
+    --border-2:  #c8cdd8;
+    --text-1:    #18202e;
+    --text-2:    #4a5470;
+    --text-3:    #8892aa;
+    --amber:     #c47d08;
+    --amber-bg:  rgba(196,125,8,0.08);
+    --amber-br:  rgba(196,125,8,0.28);
+    --green:     #1a8f54;
+    --green-bg:  rgba(26,143,84,0.08);
+    --green-br:  rgba(26,143,84,0.28);
+    --red:       #c03030;
+    --red-bg:    rgba(192,48,48,0.07);
+    --red-br:    rgba(192,48,48,0.25);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Barlow', sans-serif; background: var(--page-bg); color: var(--text-1); }
+
+  .page-wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 48px 32px 80px;
+  }
+
+  /* HEADER */
+  .page-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 40px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+    gap: 20px;
+    animation: slideDown 0.6s cubic-bezier(.16,1,.3,1) both;
+  }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .page-eyebrow {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .page-eyebrow::before { content: ''; width: 24px; height: 2px; background: var(--amber); display: block; }
+
+  .page-header h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 2.4rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    color: var(--text-1);
+    line-height: 1;
+  }
+  .page-header h1 span { color: var(--amber); }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-2);
+    text-decoration: none;
+    border: 1px solid var(--border-2);
+    border-radius: 2px;
+    padding: 9px 18px;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+  }
+  .back-link:hover { color: var(--text-1); border-color: var(--text-3); background: var(--surface-2); }
+  .back-link::before { content: '‹'; font-size: 1rem; line-height: 1; }
+
+  /* SUMMARY BAR */
+  .summary-bar {
+    display: flex;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 28px;
+    animation: fadeUp 0.6s 0.1s cubic-bezier(.16,1,.3,1) both;
+  }
+  .summary-cell {
+    flex: 1;
+    background: var(--surface);
+    padding: 20px;
+    text-align: center;
+  }
+  .summary-val {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 5px;
+  }
+  .summary-lbl {
+    font-size: 0.67rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+  .sv-total    { color: var(--text-1); }
+  .sv-pending  { color: var(--amber); }
+  .sv-approved { color: var(--green); }
+  .sv-rejected { color: var(--red);   }
+
+  /* TABLE */
+  .table-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    animation: fadeUp 0.6s 0.15s cubic-bezier(.16,1,.3,1) both;
+  }
+
+  .t-head {
+    display: grid;
+    grid-template-columns: 56px 1fr 1fr 120px 170px;
+    padding: 11px 24px;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+  }
+  .th {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.63rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+
+  .t-row {
+    display: grid;
+    grid-template-columns: 56px 1fr 1fr 120px 170px;
+    padding: 0 24px;
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+    min-height: 66px;
+    transition: background 0.2s;
+    animation: fadeUp 0.45s both;
+  }
+  .t-row:last-child { border-bottom: none; }
+  .t-row:hover { background: var(--surface-2); }
+
+  .td {
+    font-size: 0.87rem;
+    color: var(--text-2);
+    padding: 14px 0;
+  }
+  .td-id {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-3);
+  }
+  .td-name {
+    font-weight: 500;
+    color: var(--text-1);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .driver-avatar {
+    width: 30px; height: 30px;
+    border-radius: 3px;
+    background: var(--amber-bg);
+    border: 1px solid var(--amber-br);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: var(--amber);
+    flex-shrink: 0;
+    text-transform: uppercase;
+  }
+
+  /* BADGES */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.63rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 2px;
+  }
+  .badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+
+  .badge-pending  { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-br); }
+  .badge-pending::before  { background: var(--amber); }
+  .badge-approved { background: var(--green-bg);  color: var(--green); border: 1px solid var(--green-br); }
+  .badge-approved::before { background: var(--green); }
+  .badge-rejected { background: var(--red-bg);    color: var(--red);   border: 1px solid var(--red-br); }
+  .badge-rejected::before { background: var(--red); }
+
+  /* ACTION BUTTONS */
+  .action-group { display: flex; gap: 8px; }
+
+  .btn-approve, .btn-reject {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 7px 14px;
+    border-radius: 2px;
+    transition: transform 0.18s, box-shadow 0.2s, background 0.2s;
+    white-space: nowrap;
+  }
+  .btn-approve:hover, .btn-reject:hover { transform: translateY(-1px); }
+
+  .btn-approve {
+    background: var(--green-bg); color: var(--green); border: 1px solid var(--green-br);
+  }
+  .btn-approve:hover { background: rgba(94,201,138,0.16); box-shadow: 0 4px 14px rgba(94,201,138,0.15); }
+
+  .btn-reject {
+    background: var(--red-bg); color: var(--red); border: 1px solid var(--red-br);
+  }
+  .btn-reject:hover { background: rgba(224,85,85,0.16); box-shadow: 0 4px 14px rgba(224,85,85,0.15); }
+
+  /* EMPTY STATE */
+  .empty-state { padding: 72px 32px; text-align: center; }
+  .empty-icon  { font-size: 2.5rem; margin-bottom: 16px; opacity: 0.35; }
+  .empty-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.1rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--text-2); margin-bottom: 8px;
+  }
+  .empty-sub { font-size: 0.85rem; color: var(--text-3); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 760px) {
+    .page-wrap { padding: 32px 18px 60px; }
+    .t-head, .t-row { grid-template-columns: 44px 1fr 100px 130px; }
+    .td-email, .t-head .th:nth-child(3) { display: none; }
+  }
+  @media (max-width: 480px) {
+    .t-head, .t-row { grid-template-columns: 1fr 90px 120px; }
+    .td-id, .t-head .th:nth-child(1) { display: none; }
+    .page-header h1 { font-size: 1.8rem; }
+    .summary-bar { flex-wrap: wrap; }
+    .summary-cell { flex: 1 1 calc(50% - 1px); }
+  }
+</style>
+
+<div class="page-wrap">
+
+  <div class="page-header">
+    <div>
+      <div class="page-eyebrow">Admin — Driver Management</div>
+      <h1>Approve <span>Drivers</span></h1>
+    </div>
+    <a href="{{ url_for('admin.dashboard') }}" class="back-link">Back to Dashboard</a>
+  </div>
+
+  <!-- SUMMARY BAR -->
+  <div class="summary-bar">
+    <div class="summary-cell">
+      <div class="summary-val sv-total">{{ drivers | length }}</div>
+      <div class="summary-lbl">Total Listed</div>
+    </div>
+    <div class="summary-cell">
+      <div class="summary-val sv-pending">
+        {{ drivers | selectattr('status', 'none') | list | length + drivers | selectattr('status', 'equalto', 'Pending') | list | length }}
+      </div>
+      <div class="summary-lbl">Pending</div>
+    </div>
+    <div class="summary-cell">
+      <div class="summary-val sv-approved">{{ drivers | selectattr('status', 'equalto', 'approved') | list | length }}</div>
+      <div class="summary-lbl">Approved</div>
+    </div>
+    <div class="summary-cell">
+      <div class="summary-val sv-rejected">{{ drivers | selectattr('status', 'equalto', 'rejected') | list | length }}</div>
+      <div class="summary-lbl">Rejected</div>
+    </div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-card">
+
+    <div class="t-head">
+      <div class="th">ID</div>
+      <div class="th">Driver</div>
+      <div class="th">Email</div>
+      <div class="th">Status</div>
+      <div class="th">Actions</div>
+    </div>
+
+    {% for driver in drivers %}
+    <div class="t-row" style="animation-delay: {{ loop.index0 * 0.06 }}s">
+
+      <div class="td td-id">#{{ driver.id }}</div>
+
+      <div class="td td-name">
+        <div class="driver-avatar">{{ driver.first_name[0] }}{{ driver.last_name[0] }}</div>
+        {{ driver.first_name }} {{ driver.last_name }}
+      </div>
+
+      <div class="td td-email">{{ driver.email }}</div>
+
+      <div class="td">
+        {% set s = (driver.status or 'Pending') | lower %}
+        {% if s == 'approved' %}
+          <span class="badge badge-approved">Approved</span>
+        {% elif s == 'rejected' %}
+          <span class="badge badge-rejected">Rejected</span>
+        {% else %}
+          <span class="badge badge-pending">Pending</span>
+        {% endif %}
+      </div>
+
+      <div class="td">
+        <div class="action-group">
+          <a href="{{ url_for('admin.driver_action', driver_id=driver.id, action='approve') }}" class="btn-approve">✓ Approve</a>
+          <a href="{{ url_for('admin.driver_action', driver_id=driver.id, action='reject') }}"  class="btn-reject">✕ Reject</a>
+        </div>
+      </div>
+
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">🚗</div>
+      <div class="empty-title">No Drivers Found</div>
+      <div class="empty-sub">There are currently no drivers awaiting review.</div>
+    </div>
+    {% endfor %}
+
+  </div>
+
+</div>
+{% endblock %}

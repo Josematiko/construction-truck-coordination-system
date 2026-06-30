@@ -1,0 +1,404 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;800&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --page-bg:   #e8eaf0;
+    --surface:   #f2f4f8;
+    --surface-2: #e4e7ee;
+    --surface-3: #dde0e8;
+    --border:    #ced3de;
+    --border-2:  #b8bfcf;
+    --text-1:    #1c2235;
+    --text-2:    #3d4665;
+    --text-3:    #6e7a9a;
+    --text-4:    #9aa2b8;
+    --amber:     #c07a08;
+    --amber-bg:  rgba(192,122,8,0.09);
+    --amber-br:  rgba(192,122,8,0.28);
+    --green:     #177a48;
+    --green-bg:  rgba(23,122,72,0.08);
+    --green-br:  rgba(23,122,72,0.28);
+    --red:       #b02828;
+    --red-bg:    rgba(176,40,40,0.07);
+    --red-br:    rgba(176,40,40,0.24);
+    --blue:      #1a60b0;
+    --blue-bg:   rgba(26,96,176,0.08);
+    --blue-br:   rgba(26,96,176,0.24);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; min-height: 100vh; }
+  body { font-family: 'Barlow', sans-serif; background: var(--page-bg); color: var(--text-1); }
+
+  .page-wrap {
+    max-width: 1100px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 48px 32px 80px;
+  }
+
+  /* ─── HEADER ─────────────────────────────────────────── */
+  .page-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 40px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+    gap: 20px;
+    animation: slideDown 0.6s cubic-bezier(.16,1,.3,1) both;
+  }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .page-eyebrow {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .page-eyebrow::before { content: ''; width: 24px; height: 2px; background: var(--amber); display: block; }
+
+  .page-header h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 2.4rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    color: var(--text-1);
+    line-height: 1;
+  }
+  .page-header h1 span { color: var(--amber); }
+
+  .header-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    text-decoration: none;
+    border: 1px solid var(--border-2);
+    border-radius: 2px;
+    padding: 9px 18px;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+  }
+  .back-link:hover { color: var(--text-1); border-color: var(--text-4); background: var(--surface-2); }
+  .back-link::before { content: '‹'; font-size: 1rem; line-height: 1; }
+
+  .btn-add {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #fff;
+    background: var(--amber);
+    border: none;
+    border-radius: 2px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.18s, box-shadow 0.2s;
+  }
+  .btn-add:hover { background: #a86a06; transform: translateY(-1px); box-shadow: 0 6px 18px rgba(192,122,8,0.22); }
+
+  /* ─── FORM CARD ───────────────────────────────────────── */
+  .form-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 28px;
+    animation: fadeUp 0.5s cubic-bezier(.16,1,.3,1) both;
+  }
+  .form-card-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface-2);
+  }
+  .form-card-icon {
+    width: 28px; height: 28px;
+    background: var(--amber-bg);
+    border: 1px solid var(--amber-br);
+    border-radius: 3px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem;
+  }
+  .form-card-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-1);
+  }
+  .form-body { padding: 24px; }
+
+  .form-group { margin-bottom: 18px; }
+  .form-group label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: 6px;
+  }
+  .form-control {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+    background: var(--page-bg);
+    color: var(--text-1);
+    font-family: 'Barlow', sans-serif;
+    font-size: 0.88rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+  .form-control:focus { border-color: var(--amber); box-shadow: 0 0 0 3px var(--amber-bg); }
+
+  .btn-submit {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #fff;
+    background: var(--amber);
+    border: none;
+    border-radius: 2px;
+    padding: 10px 24px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.18s;
+  }
+  .btn-submit:hover { background: #a86a06; transform: translateY(-1px); }
+
+  /* ─── TABLE ───────────────────────────────────────────── */
+  .section-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-4);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  .table-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    animation: fadeUp 0.6s 0.12s cubic-bezier(.16,1,.3,1) both;
+  }
+
+  .t-head {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    padding: 11px 24px;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+  }
+  .th {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.63rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-4);
+  }
+
+  .t-row {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    padding: 0 24px;
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+    min-height: 62px;
+    transition: background 0.18s;
+    animation: fadeUp 0.4s both;
+  }
+  .t-row:last-child { border-bottom: none; }
+  .t-row:hover { background: var(--surface-2); }
+
+  .td {
+    font-size: 0.87rem;
+    color: var(--text-2);
+    padding: 14px 0;
+  }
+  .td-id {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-4);
+  }
+  .td-name {
+    font-weight: 500;
+    color: var(--text-1);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .location-icon {
+    width: 28px; height: 28px;
+    border-radius: 3px;
+    background: var(--amber-bg);
+    border: 1px solid var(--amber-br);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+  }
+
+  /* ─── EMPTY STATE ────────────────────────────────────── */
+  .empty-state { padding: 60px 32px; text-align: center; }
+  .empty-icon  { font-size: 2rem; margin-bottom: 14px; opacity: 0.35; }
+  .empty-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--text-3); margin-bottom: 6px;
+  }
+  .empty-sub { font-size: 0.83rem; color: var(--text-4); }
+
+  /* ─── COUNT BADGE ────────────────────────────────────── */
+  .count-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    background: var(--amber-bg);
+    color: var(--amber);
+    border: 1px solid var(--amber-br);
+    border-radius: 2px;
+    padding: 2px 9px;
+    margin-left: 8px;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 600px) {
+    .page-wrap { padding: 24px 16px 60px; }
+    .page-header h1 { font-size: 1.8rem; }
+    .header-actions { width: 100%; }
+    .btn-add, .back-link { flex: 1; justify-content: center; text-align: center; }
+    .t-head, .t-row { padding: 0 16px; }
+    .t-head { padding: 10px 16px; }
+    .form-body { padding: 18px 16px; }
+    .form-card-head { padding: 14px 16px; }
+    .section-label { font-size: 0.6rem; }
+  }
+</style>
+
+<div class="page-wrap">
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <div>
+      <div class="page-eyebrow">Admin — Locations</div>
+      <h1>Drop <span>Areas</span></h1>
+    </div>
+    <div class="header-actions">
+      <button id="add-location-btn" class="btn-add">+ Add Drop Area</button>
+      <a href="{{ url_for('admin.dashboard') }}" class="back-link">Back to Dashboard</a>
+    </div>
+  </div>
+
+  <!-- FORM -->
+  <div id="add-location-form" class="form-card" style="display:none;">
+    <div class="form-card-head">
+      <div class="form-card-icon">📍</div>
+      <div class="form-card-title">Add New Drop Area</div>
+    </div>
+    <div class="form-body">
+      <form method="POST">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+          <label>{{ form.name.label }}</label>
+          {{ form.name(class="form-control", placeholder="e.g. Nakuru CBD, Industrial Area…") }}
+        </div>
+        <div>
+          {{ form.submit(class="btn-submit") }}
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="section-label">
+    All Locations
+    <span class="count-badge">{{ locations | length }}</span>
+  </div>
+
+  <div class="table-card">
+    <div class="t-head">
+      <div class="th">ID</div>
+      <div class="th">Location Name</div>
+    </div>
+
+    {% for location in locations %}
+    <div class="t-row" style="animation-delay: {{ loop.index0 * 0.05 }}s">
+      <div class="td td-id">#{{ location.id }}</div>
+      <div class="td td-name">
+        <div class="location-icon">📍</div>
+        {{ location.name }}
+      </div>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">📍</div>
+      <div class="empty-title">No Drop Areas Yet</div>
+      <div class="empty-sub">Add your first drop location using the button above.</div>
+    </div>
+    {% endfor %}
+  </div>
+
+</div>
+
+<script>
+const addLocationBtn  = document.getElementById('add-location-btn');
+const addLocationForm = document.getElementById('add-location-form');
+if (addLocationBtn && addLocationForm) {
+  addLocationBtn.addEventListener('click', function () {
+    const open = addLocationForm.style.display !== 'none';
+    addLocationForm.style.display = open ? 'none' : 'block';
+    this.textContent = open ? '+ Add Drop Area' : '✕ Hide Form';
+  });
+}
+</script>
+
+{% endblock %}

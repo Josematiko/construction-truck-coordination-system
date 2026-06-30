@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;800&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --page-bg:#e8eaf0;
+    --surface:#f2f4f8;
+    --surface-2:#e4e7ee;
+    --border:#ced3de;
+
+    --text-1:#1c2235;
+    --text-2:#3d4665;
+    --text-3:#6e7a9a;
+    --text-4:#9aa2b8;
+
+    --green:#177a48;
+    --green-bg:rgba(23,122,72,0.08);
+    --amber:#c07a08;
+}
+
+/* BASE */
+body {
+    font-family:'Barlow',sans-serif;
+    background:var(--page-bg);
+    color:var(--text-1);
+    margin:0;
+}
+
+/* WRAP */
+.page-wrap {
+    max-width:720px;
+    margin:0 auto;
+    padding:50px 28px 80px;
+}
+
+/* HEADER */
+.page-header {
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:4px;
+    padding:22px 24px;
+    margin-bottom:18px;
+}
+
+.page-eyebrow {
+    font-family:'Barlow Condensed',sans-serif;
+    font-size:.7rem;
+    text-transform:uppercase;
+    letter-spacing:.2em;
+    color:var(--amber);
+    margin-bottom:6px;
+}
+
+.page-title {
+    font-family:'Barlow Condensed',sans-serif;
+    font-size:2rem;
+    font-weight:800;
+    text-transform:uppercase;
+}
+
+.page-title span {
+    color:var(--green);
+}
+
+/* CARD */
+.card {
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:4px;
+    padding:28px;
+}
+
+/* FORM */
+.form-group {
+    margin-bottom:18px;
+}
+
+label {
+    display:block;
+    font-family:'Barlow Condensed',sans-serif;
+    font-size:.72rem;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--text-4);
+    margin-bottom:6px;
+}
+
+.form-control,
+select {
+    width:100%;
+    padding:12px;
+    border:1px solid var(--border);
+    background:#fff;
+    font-size:.9rem;
+    border-radius:2px;
+    outline:none;
+    transition:.2s;
+}
+
+.form-control:focus,
+select:focus {
+    border-color:var(--green);
+    box-shadow:0 0 0 3px var(--green-bg);
+}
+
+/* BUTTONS */
+.button-group {
+    display:flex;
+    gap:10px;
+    margin-top:22px;
+}
+
+.btn {
+    flex:1;
+    padding:12px;
+    border:none;
+    font-family:'Barlow Condensed',sans-serif;
+    font-size:.78rem;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.12em;
+    border-radius:2px;
+    cursor:pointer;
+    text-align:center;
+    text-decoration:none;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+/* PRIMARY */
+.btn-submit {
+    background:var(--green);
+    color:#fff;
+}
+
+.btn-submit:hover {
+    background:#12663c;
+}
+
+/* SECONDARY */
+.btn-secondary {
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    color:var(--text-2);
+}
+
+.btn-secondary:hover {
+    background:#dfe3eb;
+}
+
+/* MOBILE */
+@media(max-width:768px){
+    .button-group {
+        flex-direction:column;
+    }
+}
+</style>
+
+<div class="page-wrap">
+
+    <!-- HEADER -->
+    <div class="page-header">
+        <div class="page-eyebrow">Driver Panel</div>
+        <div class="page-title">Update <span>Truck Status</span></div>
+    </div>
+
+    <!-- CARD -->
+    <div class="card">
+        <form method="POST">
+            {{ form.hidden_tag() }}
+
+            <div class="form-group">
+                {{ form.status.label }}
+                {{ form.status(class="form-control") }}
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="btn btn-submit">
+                    Update Status
+                </button>
+
+                <a href="{{ url_for('driver.dashboard') }}" class="btn btn-secondary">
+                    Back to Dashboard
+                </a>
+            </div>
+        </form>
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,272 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;800&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --page-bg: #e8eaf0;
+    --surface: #f2f4f8;
+    --surface-alt: #ffffff;
+    --border: #ced3de;
+    --text-1: #1c2235;
+    --text-2: #4b5563;
+    --text-3: #6b7280;
+    --amber: #c07a08;
+    --green: #177a48;
+    --blue: #1a60b0;
+    --amber-bg: rgba(192,122,8,0.09);
+    --green-bg: rgba(23,122,72,0.08);
+    --blue-bg: rgba(26,96,176,0.08);
+    --shadow: 0 16px 30px rgba(15,23,42,0.08);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Barlow', sans-serif; background: var(--page-bg); color: var(--text-1); }
+
+  .page-wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 30px 80px;
+  }
+
+  .page-header {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px;
+    margin-bottom: 28px;
+    box-shadow: var(--shadow);
+  }
+
+  .page-eyebrow {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 12px;
+  }
+
+  .page-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text-1);
+  }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-top: 18px;
+  }
+
+  .info-card {
+    background: var(--surface);
+    padding: 16px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+  }
+
+  .info-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: .15em;
+    color: var(--text-3);
+    margin-bottom: 8px;
+  }
+
+  .info-value {
+    font-weight: 700;
+    color: var(--text-1);
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 6px 12px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    border-radius: 999px;
+  }
+
+  .badge-transit { background: var(--blue-bg); color: var(--blue); }
+  .badge-pending { background: var(--amber-bg); color: var(--amber); }
+  .badge-done { background: var(--green-bg); color: var(--green); }
+
+  .chat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+
+  .chat-box {
+    height: 440px;
+    overflow-y: auto;
+    padding: 22px;
+    background: var(--page-bg);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .msg {
+    max-width: 72%;
+    padding: 14px 16px;
+    border-radius: 18px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .msg.sent {
+    align-self: flex-end;
+    background: var(--blue);
+    color: white;
+    border-bottom-right-radius: 4px;
+  }
+
+  .msg.received {
+    align-self: flex-start;
+    background: var(--green);
+    color: white;
+    border-bottom-left-radius: 4px;
+  }
+
+  .msg-time {
+    display: block;
+    font-size: 0.75rem;
+    opacity: 0.75;
+    margin-top: 8px;
+  }
+
+  .chat-input {
+    display: flex;
+    gap: 12px;
+    padding: 18px;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .chat-input input {
+    flex: 1;
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    outline: none;
+    font-family: inherit;
+    color: var(--text-1);
+  }
+
+  .chat-input button {
+    background: var(--amber);
+    color: white;
+    border: none;
+    padding: 14px 20px;
+    font-weight: 700;
+    border-radius: 16px;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+  }
+
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 20px;
+    padding: 12px 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    color: var(--text-2);
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.85rem;
+  }
+
+  @media (max-width: 768px) {
+    .page-wrap { padding: 34px 20px 60px; }
+    .chat-box { height: 380px; }
+    .msg { max-width: 100%; }
+  }
+</style>
+
+<div class="page-wrap">
+
+    <!-- HEADER -->
+    <div class="page-header">
+        <div>
+            <div class="page-eyebrow">Customer • Order Chat</div>
+            <h1 class="page-title">Order Communication</h1>
+            {% if order.driver_id in online_users %}
+            <span data-presence-user="{{ order.driver_id }}" style="color: var(--green); font-size: 0.9rem; font-weight: 700;">Driver Online</span>
+        {% else %}
+            <span data-presence-user="{{ order.driver_id }}" style="color: var(--text-3); font-size: 0.9rem;">Driver Offline</span>
+        {% endif %}
+        </div>
+
+        <div class="info-grid">
+            <div class="info-card">
+                <div class="info-label">Material</div>
+                <div class="info-value">{{ order.material.name if order.material else 'N/A' }}</div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-label">Quantity</div>
+                <div class="info-value">{{ order.quantity }}</div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-label">Total Price</div>
+                <div class="info-value">Ksh {{ order.total_price }}</div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-label">Status</div>
+                <div class="info-value">
+                    {% if order.status == 'In Transit' %}
+                        <span class="badge badge-transit">In Transit</span>
+                    {% elif order.status == 'Completed' %}
+                        <span class="badge badge-done">Completed</span>
+                    {% else %}
+                        <span class="badge badge-pending">{{ order.status }}</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CHAT -->
+    <div class="chat-card">
+
+        <div id="chat-box" class="chat-box">
+            {% for chat in chats %}
+                <div class="msg {% if chat.sender_id == current_user.id %}sent{% else %}received{% endif %}">
+                    <strong>{{ "You" if chat.sender_id == current_user.id else chat.sender.first_name }}</strong><br>
+                    {{ chat.message }}
+                    <span class="msg-time">{{ chat.timestamp.strftime('%H:%M') }}</span>
+                </div>
+            {% endfor %}
+        </div>
+
+        <form class="chat-input" method="POST">
+            {{ form.hidden_tag() }}
+            {{ form.message(id="message-input", placeholder="Type message...") }}
+            <button type="submit">Send</button>
+        </form>
+
+    </div>
+
+    <a href="{{ url_for('customer.dashboard') }}" class="back-btn">Back to Dashboard</a>
+
+</div>
+
+<script>
+const chatBox = document.getElementById("chat-box");
+chatBox.scrollTop = chatBox.scrollHeight;
+</script>
+
+{% endblock %}

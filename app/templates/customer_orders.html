@@ -1,0 +1,307 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;800&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --page-bg:#e8eaf0;
+  --surface:#f2f4f8;
+  --surface-2:#e4e7ee;
+  --border:#ced3de;
+  --text-1:#1c2235;
+  --text-2:#3d4665;
+  --text-3:#6e7a9a;
+  --text-4:#9aa2b8;
+  --amber:#c07a08;
+  --amber-bg:rgba(192,122,8,0.09);
+  --green:#177a48;
+  --green-bg:rgba(23,122,72,0.08);
+  --blue:#1a60b0;
+  --blue-bg:rgba(26,96,176,0.08);
+}
+
+body { font-family:'Barlow',sans-serif; background:var(--page-bg); }
+
+.page-wrap {
+  max-width:1100px;
+  margin:0 auto;
+  padding:48px 32px 80px;
+}
+
+/* HEADER */
+.page-header {
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  margin-bottom:32px;
+  border-bottom:1px solid var(--border);
+  padding-bottom:20px;
+}
+
+.page-eyebrow {
+  font-family:'Barlow Condensed';
+  font-size:.7rem;
+  text-transform:uppercase;
+  color:var(--amber);
+  letter-spacing:.2em;
+}
+
+.page-header h1 {
+  font-family:'Barlow Condensed';
+  font-size:2.2rem;
+  font-weight:800;
+  text-transform:uppercase;
+}
+
+/* ORDER CARD */
+.order-card {
+  background:var(--surface);
+  border:1px solid var(--border);
+  margin-bottom:14px;
+  padding:18px;
+  transition:.2s;
+}
+
+.order-card:hover {
+  transform:translateY(-2px);
+  background:var(--surface-2);
+}
+
+/* GRID */
+.info-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:12px;
+}
+
+.info-box {
+  background:#fff;
+  border:1px solid var(--border);
+  padding:10px;
+}
+
+.info-label {
+  font-size:.7rem;
+  text-transform:uppercase;
+  color:var(--text-4);
+}
+
+.info-value {
+  font-size:.9rem;
+  color:var(--text-1);
+}
+
+/* STATUS TIMELINE (INNOVATION) */
+.timeline {
+  display:flex;
+  gap:8px;
+  margin-top:10px;
+  font-size:.7rem;
+}
+
+.step {
+  padding:3px 8px;
+  border:1px solid var(--border);
+  color:var(--text-4);
+}
+
+.step.active {
+  background:var(--amber-bg);
+  color:var(--amber);
+}
+
+/* BUTTONS */
+.btn {
+  font-family:'Barlow Condensed';
+  text-transform:uppercase;
+  font-size:.75rem;
+  padding:10px 16px;
+  border:none;
+  cursor:pointer;
+  text-decoration:none;
+  display:inline-block;
+}
+
+.btn-primary { background:var(--blue); color:#fff; }
+.btn-rate { background:var(--amber); color:#000; }
+.btn-disabled { background:#ddd; color:#888; cursor:not-allowed; }
+
+/* EMPTY */
+.empty-state {
+  text-align:center;
+  padding:50px;
+  color:var(--text-4);
+}
+
+/* ACTION BAR */
+.action-bar {
+  margin-top:25px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.report-toolbar {
+  background:var(--surface);
+  border:1px solid var(--border);
+  padding:16px;
+  margin-bottom:22px;
+  display:flex;
+  align-items:end;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
+.filter-field {
+  display:grid;
+  gap:5px;
+}
+
+.filter-field label {
+  font-size:.68rem;
+  color:var(--text-3);
+  text-transform:uppercase;
+  font-weight:700;
+  letter-spacing:.1em;
+}
+
+.filter-field input {
+  padding:10px;
+  border:1px solid var(--border);
+  background:#fff;
+  color:var(--text-1);
+}
+
+.toolbar-btn {
+  border:0;
+  text-decoration:none;
+  padding:11px 16px;
+  background:var(--blue);
+  color:#fff;
+  font-weight:700;
+  cursor:pointer;
+  border-radius:4px;
+}
+
+.toolbar-btn.secondary {
+  background:#fff;
+  color:var(--text-1);
+  border:1px solid var(--border);
+}
+
+@media print {
+  .navbar, .flash-container, .report-toolbar, .page-header a, .action-bar .btn, .ai-assistant { display:none !important; }
+  .page-content { padding:0 !important; margin:0 !important; }
+  .page-wrap { max-width:none; padding:0; }
+  body { background:#fff; }
+  .order-card { break-inside:avoid; }
+}
+</style>
+
+<div class="page-wrap">
+
+<!-- HEADER -->
+<div class="page-header">
+  <div>
+    <a href="{{ url_for('customer.dashboard') }}" style="color:#55617d; text-decoration:none; border:1px solid #dfe3ea; padding:8px 16px; border-radius:4px; margin-bottom:10px; display:inline-block;">← Back to Dashboard</a>
+    <div class="page-eyebrow">Customer</div>
+    <h1>My Orders</h1>
+  </div>
+</div>
+
+<form class="report-toolbar" method="get">
+  <div class="filter-field">
+    <label for="start_date">From Date</label>
+    <input id="start_date" name="start_date" type="date" value="{{ start_date }}">
+  </div>
+  <div class="filter-field">
+    <label for="end_date">To Date</label>
+    <input id="end_date" name="end_date" type="date" value="{{ end_date }}">
+  </div>
+  <button class="toolbar-btn" type="submit">Show Orders</button>
+  <a class="toolbar-btn secondary" href="{{ url_for('customer.my_orders') }}">Reset</a>
+  <button class="toolbar-btn secondary" type="button" onclick="window.print()">Print as PDF</button>
+</form>
+
+{% if orders %}
+
+  {% for order in orders %}
+  {% set order_rating = ratings_by_order.get(order.id) %}
+  {% set payment = payments_by_order.get(order.id) %}
+
+  <div class="order-card">
+
+    <strong>{{ order.material.name if order.material else 'N/A' }}</strong>
+    <small style="color:var(--text-3)">Qty {{ order.quantity }}</small>
+
+    <div class="info-grid" style="margin-top:10px;">
+
+      <div class="info-box">
+        <div class="info-label">Total</div>
+        <div class="info-value">Ksh {{ order.total_price }}</div>
+      </div>
+
+      <div class="info-box">
+        <div class="info-label">Location</div>
+        <div class="info-value">{{ order.drop_location.name if order.drop_location else 'N/A' }}</div>
+      </div>
+
+      <div class="info-box">
+        <div class="info-label">Status</div>
+        <div class="info-value">{{ order.display_status if order.display_status else order.status }}</div>
+      </div>
+
+    </div>
+
+    <!-- STATUS TIMELINE (SMART UX UPGRADE) -->
+    <div class="timeline">
+      <span class="step {% if order.status in ['Awaiting Payment', 'Payment Failed', 'Pending', 'Pending Driver Response'] %}active{% endif %}">Pending</span>
+      <span class="step {% if order.status == 'In Transit' %}active{% endif %}">Transit</span>
+      <span class="step {% if order.status == 'Completed' %}active{% endif %}">Done</span>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="action-bar">
+
+      {% if order.status in ['In Transit','Completed','Completed (Pending Admin Approval)'] %}
+        <a href="{{ url_for('customer.chat', order_id=order.id) }}" class="btn btn-primary">Chat</a>
+      {% else %}
+        <button class="btn btn-disabled">Waiting Driver</button>
+      {% endif %}
+
+      {% if payment and payment.status == 'Completed' %}
+        <span style="color:var(--green); font-weight:bold;">Paid{% if payment.provider_reference %} • {{ payment.provider_reference }}{% endif %}</span>
+      {% elif payment and payment.status == 'Pending Confirmation' %}
+        <span style="color:var(--amber); font-weight:bold;">Paybill Paid - Waiting Admin Confirmation</span>
+      {% elif payment and payment.status == 'Pending' %}
+        <span style="color:var(--blue); font-weight:bold;">Payment Pending</span>
+      {% elif payment and payment.status == 'Failed' %}
+        <span style="color:#b02828; font-weight:bold;">Payment Failed</span>
+      {% else %}
+        <span style="color:var(--text-3); font-weight:bold;">Unpaid</span>
+      {% endif %}
+
+      {% if order.status == 'Completed' and not order_rating %}
+        <a href="{{ url_for('customer.rate_order', order_id=order.id) }}" class="btn btn-rate">Rate</a>
+      {% elif order_rating %}
+        <span style="color:var(--amber); font-weight:bold;">⭐ {{ order_rating.rating }}/5</span>
+      {% endif %}
+
+    </div>
+
+  </div>
+  {% endfor %}
+
+{% else %}
+
+  <div class="empty-state">
+    No orders yet.<br><br>
+    <a href="{{ url_for('customer.place_order') }}" class="btn btn-primary">Place Order</a>
+  </div>
+
+{% endif %}
+
+</div>
+
+{% endblock %}

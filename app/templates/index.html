@@ -1,0 +1,812 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;800&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --page-bg: #b8bfc7;
+    --surface: #c9d1d9;
+    --surface-alt: #d1d9e6;
+    --border: #7c8798;
+    --text-1: #0f172a;
+    --text-2: #1e293b;
+    --text-3: #475569;
+    --accent: #1d4ed8;
+    --accent-soft: rgba(29,78,216,0.12);
+    --amber: #b45309;
+    --green: #047857;
+    --blue: #1e40af;
+    --shadow: 0 16px 30px rgba(15,23,42,0.08);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body { font-family: 'Barlow', sans-serif; background: var(--page-bg); color: var(--text-1); }
+
+  .page-content {
+    margin-top: 0;
+    padding: 0;
+  }
+
+  /* ─── HERO ─────────────────────────────────────────────── */
+  .hero {
+    min-height: 100vh;
+    background:
+      linear-gradient(160deg, rgba(209,213,219,0.7) 40%, rgba(229,231,235,0.8) 100%),
+      url('{{ url_for("static", filename="images/construction_bg.jpg") }}') center/cover no-repeat;
+    display: flex;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* subtle grid overlay */
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(192,122,8,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(192,122,8,0.06) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+  }
+
+  /* diagonal amber slice */
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -2px; left: 0; right: 0;
+    height: 120px;
+    background: var(--surface);
+    clip-path: polygon(0 60%, 100% 0, 100% 100%, 0 100%);
+  }
+
+  .hero-inner {
+    position: relative; z-index: 2;
+    width: 100%; display: flex;
+    align-items: stretch;
+  }
+
+  /* LEFT: main content */
+  .hero-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 80px 60px 120px;
+    animation: slideUp 1s cubic-bezier(.16,1,.3,1) both;
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 24px;
+  }
+  .hero-eyebrow::before {
+    content: '';
+    display: block; width: 32px; height: 2px;
+    background: var(--amber);
+  }
+
+  .hero-main h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(3rem, 6vw, 5.5rem);
+    font-weight: 800;
+    line-height: 0.95;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    color: var(--text-1);
+    margin-bottom: 28px;
+  }
+  .hero-main h1 span {
+    color: var(--amber);
+    display: block;
+  }
+
+  .hero-main p {
+    max-width: 520px;
+    font-size: 1.05rem;
+    font-weight: 300;
+    line-height: 1.75;
+    color: var(--text-2);
+    margin-bottom: 44px;
+  }
+
+  .hero-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 36px;
+    background: var(--accent);
+    color: var(--surface-alt);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 16px;
+    transition: background 0.25s, transform 0.2s, box-shadow 0.25s;
+    box-shadow: var(--shadow);
+  }
+  .btn-primary:hover {
+    background: #1d4ed8;
+    transform: translateY(-2px);
+    box-shadow: 0 20px 40px rgba(37,99,235,0.3);
+  }
+  .btn-primary svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 15px 28px;
+    background: transparent;
+    color: var(--text-2);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    transition: border-color 0.25s, color 0.25s;
+  }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* RIGHT: offers sidebar */
+  .hero-sidebar {
+    width: 300px;
+    flex-shrink: 0;
+    background: var(--surface-alt);
+    backdrop-filter: blur(12px);
+    border-left: 1px solid var(--border);
+    padding: 60px 28px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    z-index: 2;
+    animation: slideLeft 1s 0.2s cubic-bezier(.16,1,.3,1) both;
+    box-shadow: var(--shadow);
+  }
+
+  @keyframes slideLeft {
+    from { opacity: 0; transform: translateX(30px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  .sidebar-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .sidebar-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(192,122,8,0.5), transparent);
+  }
+
+  .offer-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px 18px;
+    margin-bottom: 12px;
+    transition: border-color 0.25s, transform 0.25s;
+    cursor: default;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  }
+  .offer-card:hover {
+    border-color: var(--accent);
+    transform: translateX(4px);
+  }
+  .offer-card h3 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-1);
+    letter-spacing: 0.04em;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+  .offer-old {
+    font-size: 0.78rem;
+    color: var(--text-3);
+    text-decoration: line-through;
+    margin-bottom: 2px;
+  }
+  .offer-new {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--amber);
+    line-height: 1;
+  }
+  .offer-save {
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #5ec98a;
+    background: rgba(94,201,138,0.12);
+    padding: 2px 8px;
+    border-radius: 2px;
+  }
+
+  /* ─── STATS ─────────────────────────────────────────────── */
+  .stats {
+    background: var(--surface);
+    padding: 70px 60px;
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid var(--border);
+  }
+
+  .stats-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--amber);
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    max-width: 900px;
+    margin: 0 auto;
+    box-shadow: var(--shadow);
+  }
+
+  .stat-cell {
+    background: var(--surface-alt);
+    padding: 40px 32px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s;
+  }
+  .stat-cell::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 0; height: 2px;
+    background: var(--accent);
+    transition: width 0.4s;
+  }
+  .stat-cell:hover { background: var(--surface); }
+  .stat-cell:hover::before { width: 60%; }
+
+  .stat-link {
+    display: inline-block;
+    margin-top: 12px;
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+  .stat-link:hover {
+    text-decoration: underline;
+  }
+
+  .stat-icon {
+    font-size: 1.4rem;
+    margin-bottom: 10px;
+    opacity: 0.7;
+    color: var(--accent);
+  }
+  .stat-number {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 3.2rem;
+    font-weight: 800;
+    color: var(--text-1);
+    line-height: 1;
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+  }
+  .stat-number sup {
+    font-size: 1.4rem;
+    color: var(--amber);
+    vertical-align: super;
+  }
+  .stat-label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+
+  /* ─── FEATURES ───────────────────────────────────────────── */
+  .features {
+    background: var(--page-bg);
+    padding: 100px 60px;
+    position: relative;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 60px;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .section-tag {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 12px;
+  }
+
+  .section-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 800;
+    text-transform: uppercase;
+    line-height: 0.95;
+    color: var(--text-1);
+    letter-spacing: -0.01em;
+  }
+  .section-title span { color: var(--amber); }
+
+  .section-sub {
+    max-width: 360px;
+    font-size: 0.9rem;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--text-2);
+    align-self: flex-end;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+
+  .feature-card {
+    background: var(--surface-alt);
+    padding: 44px 36px;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s;
+  }
+  .feature-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 0;
+    background: var(--accent);
+    transition: height 0.4s cubic-bezier(.16,1,.3,1);
+  }
+  .feature-card:hover { background: var(--surface); }
+  .feature-card:hover::after { height: 100%; }
+
+  .feature-icon-wrap {
+    width: 48px; height: 48px;
+    border-radius: 16px;
+    background: rgba(37,99,235,0.1);
+    border: 1px solid rgba(37,99,235,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem;
+    margin-bottom: 24px;
+    transition: background 0.3s, border-color 0.3s;
+    color: var(--accent);
+  }
+  .feature-card:hover .feature-icon-wrap {
+    background: rgba(37,99,235,0.18);
+    border-color: rgba(37,99,235,0.45);
+  }
+
+  .feature-card h3 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-1);
+    margin-bottom: 12px;
+  }
+
+  .feature-card p {
+    font-size: 0.88rem;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--text-2);
+  }
+
+  /* ─── TRUST BAND ─────────────────────────────────────────── */
+  .trust-band {
+    background: var(--surface-alt);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 28px 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 60px;
+    flex-wrap: wrap;
+  }
+  .trust-item {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .trust-item::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+  }
+
+  /* ─── FOOTER CTA ─────────────────────────────────────────── */
+  .cta-section {
+    background: var(--surface);
+    padding: 100px 60px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    border-top: 1px solid var(--border);
+  }
+  .cta-section::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(37,99,235,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .cta-section h2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(2.2rem, 5vw, 4rem);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    color: var(--text-1);
+    margin-bottom: 20px;
+    position: relative;
+  }
+  .cta-section h2 span { color: var(--accent); }
+  .cta-section p {
+    font-size: 1rem;
+    font-weight: 300;
+    color: var(--text-2);
+    max-width: 480px;
+    margin: 0 auto 44px;
+    line-height: 1.7;
+    position: relative;
+  }
+
+  /* ─── SCROLL ANIMATION ───────────────────────────────────── */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.7s cubic-bezier(.16,1,.3,1), transform 0.7s cubic-bezier(.16,1,.3,1);
+  }
+  .fade-up.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ─── MOBILE ─────────────────────────────────────────────── */
+  @media (max-width: 900px) {
+    .hero {
+      min-height: auto;
+      background-position: center top;
+    }
+    .hero::before {
+      background-size: 38px 38px;
+    }
+    .hero::after {
+      height: 54px;
+      clip-path: polygon(0 72%, 100% 28%, 100% 100%, 0 100%);
+    }
+    .hero-inner { flex-direction: column; }
+    .hero-main {
+      min-height: auto;
+      padding: 42px 24px 34px;
+    }
+    .hero-eyebrow {
+      margin-bottom: 16px;
+      font-size: 0.68rem;
+      letter-spacing: 0.16em;
+    }
+    .hero-main h1 {
+      font-size: clamp(2.4rem, 12vw, 3.4rem);
+      margin-bottom: 18px;
+    }
+    .hero-main p {
+      font-size: 0.96rem;
+      line-height: 1.55;
+      margin-bottom: 26px;
+    }
+    .hero-actions {
+      gap: 12px;
+    }
+    .btn-primary,
+    .btn-ghost {
+      border-radius: 12px;
+      padding: 13px 18px;
+      letter-spacing: 0.06em;
+    }
+    .hero-sidebar {
+      width: 100%;
+      border-left: none;
+      border-top: 1px solid rgba(232,160,32,0.25);
+      padding: 18px 18px 22px;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .sidebar-title {
+      width: 100%;
+      margin-bottom: 2px;
+    }
+    .offer-card {
+      flex: 1 1 150px;
+      margin-bottom: 0;
+      padding: 12px 14px;
+      border-radius: 12px;
+    }
+    .offer-card h3 {
+      font-size: 0.92rem;
+      margin-bottom: 5px;
+    }
+    .offer-new {
+      font-size: 1.25rem;
+    }
+    .stats { padding: 50px 28px; }
+    .features { padding: 70px 28px; }
+    .trust-band { padding: 24px 28px; gap: 28px; }
+    .cta-section { padding: 70px 28px; }
+  }
+
+  @media (max-width: 480px) {
+    .hero {
+      background-size: auto 100%;
+    }
+    .hero-main {
+      padding: 28px 18px 22px;
+    }
+    .hero-eyebrow {
+      margin-bottom: 10px;
+    }
+    .hero-main h1 {
+      font-size: 2.1rem;
+      margin-bottom: 12px;
+    }
+    .hero-main p {
+      font-size: 0.88rem;
+      line-height: 1.45;
+      margin-bottom: 18px;
+    }
+    .hero-actions a {
+      width: 100%;
+      justify-content: center;
+      padding: 11px 14px;
+    }
+    .hero-sidebar {
+      display: grid;
+      grid-template-columns: 1fr;
+      padding: 12px 14px 14px;
+      gap: 8px;
+    }
+    .offer-card:nth-of-type(n+4) {
+      display: none;
+    }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .section-header { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+
+<!-- ─── HERO ─────────────────────────────────────────────────────── -->
+<div class="hero">
+  <div class="hero-inner">
+
+    <div class="hero-main">
+      <div class="hero-eyebrow">Fleet Operations Platform</div>
+      <h1>
+        Construction
+        <span>Trucks</span>
+        System
+      </h1>
+      <p>
+        Centralise your entire fleet operation — trucks, drivers, orders, and materials — in one powerful platform. Reduce delays, enforce compliance, and deliver on time, every time.
+      </p>
+      <div class="hero-actions">
+        {% if current_user.is_authenticated %}
+          <a href="{{ url_for('auth.home') }}" class="btn-primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            Go to Dashboard
+          </a>
+        {% else %}
+          <a href="{{ url_for('auth.login') }}" class="btn-primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            Get Started — Free
+          </a>
+          <a href="#features" class="btn-ghost">See How It Works</a>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if discounted_materials %}
+    <div class="hero-sidebar">
+      <div class="sidebar-title">🔥 Limited Offers</div>
+      {% for material in discounted_materials %}
+      <div class="offer-card">
+        <h3>{{ material.name }}</h3>
+        <div class="offer-old">Was Ksh {{ material.price }}</div>
+        <div class="offer-new">Ksh {{ material.discount_price }}</div>
+        <div class="offer-save">Save Ksh {{ "%.0f"|format(material.price - material.discount_price) }}</div>
+        <div style="font-size:0.8rem; color:#6b7280; margin-top:5px;">Valid: {{ material.discount_start.strftime('%b %d') }} - {{ material.discount_end.strftime('%b %d, %Y') }}</div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+
+<!-- ─── TRUST BAND ─────────────────────────────────────────────────── -->
+<div class="trust-band fade-up">
+  <div class="trust-item">Trusted Nationwide</div>
+  <div class="trust-item">Real-Time Tracking</div>
+  <div class="trust-item">24/7 Support</div>
+  <div class="trust-item">ISO Compliant</div>
+  <div class="trust-item">Secure Platform</div>
+</div>
+
+<!-- ─── STATS ─────────────────────────────────────────────────────── -->
+<div class="stats fade-up">
+  <div class="stats-label">Impact by numbers</div>
+  <div class="stats-grid">
+    <div class="stat-cell">
+      <div class="stat-icon">🚛</div>
+      <div class="stat-number">{{ total_trucks }}<sup>+</sup></div>
+      <div class="stat-label">Trucks Managed</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-icon">👥</div>
+      <div class="stat-number">{{ total_customers }}<sup>+</sup></div>
+      <div class="stat-label">Happy Customers</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-icon">📦</div>
+      <div class="stat-number">{{ total_orders }}<sup>+</sup></div>
+      <div class="stat-label">Orders Delivered</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-icon">⭐</div>
+      <div class="stat-number">{{ avg_rating }}<sup>/5</sup></div>
+      <div class="stat-label">Customer Rating</div>
+      <a href="{{ url_for('auth.reviews') }}" class="stat-link">View Reviews</a>
+    </div>
+  </div>
+</div>
+
+<!-- ─── FEATURES ───────────────────────────────────────────────────── -->
+<div class="features fade-up" id="features">
+  <div class="section-header">
+    <div>
+      <div class="section-tag">Why Choose Us</div>
+      <div class="section-title">Built for the<br><span>Job Site</span></div>
+    </div>
+    <div class="section-sub">
+      Every feature is engineered around the real challenges of construction logistics — so you spend less time managing and more time delivering.
+    </div>
+  </div>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon-wrap">🚛</div>
+      <h3>Truck Management</h3>
+      <p>Track and manage your entire fleet with real-time status updates, maintenance alerts, and route visibility — all in one place.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon-wrap">👥</div>
+      <h3>Driver Coordination</h3>
+      <p>Assign drivers, review and approve licenses, track compliance, and ensure every driver on your fleet meets safety requirements.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon-wrap">📦</div>
+      <h3>Material Orders</h3>
+      <p>Place, track, and manage construction material orders seamlessly. Know exactly what's been ordered, shipped, and delivered at all times.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon-wrap">💬</div>
+      <h3>Real-Time Chat</h3>
+      <p>Communicate directly with drivers and dispatch teams for instant coordination, fewer delays, and smoother deliveries on every job.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ─── CTA ───────────────────────────────────────────────────────── -->
+<div class="cta-section fade-up">
+  <h2>Ready to Move<br><span>Smarter?</span></h2>
+  <p>Join hundreds of construction companies already running a tighter, faster, safer fleet operation.</p>
+  {% if current_user.is_authenticated %}
+    <a href="{{ url_for('auth.home') }}" class="btn-primary" style="font-size:1.1rem; padding: 18px 48px;">
+      Open Dashboard
+    </a>
+  {% else %}
+    <a href="{{ url_for('auth.login') }}" class="btn-primary" style="font-size:1.1rem; padding: 18px 48px;">
+      Get Started — Free
+    </a>
+  {% endif %}
+</div>
+
+<script>
+  // Scroll-triggered fade-up
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        // stagger children in grids
+        entry.target.querySelectorAll('.stat-cell, .feature-card, .offer-card').forEach((el, i) => {
+          el.style.transitionDelay = (i * 0.07) + 's';
+        });
+      }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+</script>
+
+{% endblock %}

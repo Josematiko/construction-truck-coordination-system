@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+  :root {
+    --page-bg:#e8eaf0;
+    --surface:#f2f4f8;
+    --border:#ced3de;
+    --text-1:#1c2235;
+    --text-2:#3d4665;
+    --text-3:#6e7a9a;
+    --blue:#1a60b0;
+    --amber:#c07a08;
+    --green:#177a48;
+  }
+
+  body { font-family:'Barlow',sans-serif; background:var(--page-bg); color:var(--text-1); }
+  .wrap { max-width:700px; margin:0 auto; padding:42px 24px 70px; }
+  .card { background:var(--surface); border:1px solid var(--border); padding:22px; margin-bottom:16px; }
+  .title { font-family:'Barlow Condensed',sans-serif; font-size:2rem; font-weight:800; text-transform:uppercase; margin-bottom:10px; }
+  .sub { color:var(--text-3); margin-bottom:20px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:10px; margin-top:8px; }
+  .cell { border:1px solid var(--border); background:#fff; padding:10px; }
+  .label { font-size:.7rem; text-transform:uppercase; color:var(--text-3); }
+  .value { font-size:.9rem; color:var(--text-1); font-weight:600; }
+  .form-group { margin-bottom:14px; }
+  label { display:block; font-size:.75rem; text-transform:uppercase; letter-spacing:.08em; color:var(--text-2); margin-bottom:6px; font-weight:700; }
+  .form-control { width:100%; padding:11px 12px; border:1px solid var(--border); background:#fff; font-size:.95rem; }
+  .btn { display:inline-block; padding:11px 18px; border:none; text-decoration:none; cursor:pointer; font-weight:700; text-transform:uppercase; font-size:.78rem; }
+  .btn-primary { background:var(--blue); color:#fff; }
+  .btn-secondary { background:#fff; color:var(--text-2); border:1px solid var(--border); margin-left:10px; }
+  .hint { color:var(--text-3); font-size:.85rem; margin-top:8px; }
+  .error { color:#b02828; font-size:.85rem; margin-top:4px; }
+</style>
+
+<div class="wrap">
+  <div class="card">
+    <div class="title">Pay Order #{{ order.id }}</div>
+    <div class="sub">Choose M-Pesa for instant prompt or Paybill for manual admin confirmation.</div>
+
+    <div class="grid">
+      <div class="cell">
+        <div class="label">Material</div>
+        <div class="value">{{ order.material.name if order.material else 'N/A' }}</div>
+      </div>
+      <div class="cell">
+        <div class="label">Quantity</div>
+        <div class="value">{{ order.quantity }}</div>
+      </div>
+      <div class="cell">
+        <div class="label">Amount</div>
+        <div class="value">Ksh {{ order.total_price }}</div>
+      </div>
+      <div class="cell">
+        <div class="label">Drop Location</div>
+        <div class="value">{{ order.drop_location.name if order.drop_location else 'N/A' }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <form method="POST">
+      {{ form.hidden_tag() }}
+
+      <div class="form-group">
+        <label>{{ form.payment_method.label }}</label>
+        {{ form.payment_method(class="form-control", id="payment-method") }}
+      </div>
+
+      <div class="form-group" id="mpesa-phone-group">
+        <label>{{ form.phone_number.label }}</label>
+        {{ form.phone_number(class="form-control", placeholder="07XXXXXXXX or 2547XXXXXXXX") }}
+        {% if form.phone_number.errors %}
+          <div class="error">{{ form.phone_number.errors[0] }}</div>
+        {% endif %}
+        <div class="hint">Ensure this number is active for M-Pesa and has enough balance.</div>
+      </div>
+
+      <div class="form-group" id="paybill-info" style="display:none;">
+        {% if paybill_number %}
+        <div class="hint" style="border:1px solid var(--border); background:#fff; padding:10px;">
+          Paybill number: <strong>{{ paybill_number }}</strong><br>
+          After payment, admin will confirm and then dispatch the order to a driver.
+        </div>
+        {% else %}
+        <div class="error">Paybill number is not configured by admin yet.</div>
+        {% endif %}
+      </div>
+
+      {{ form.submit(class="btn btn-primary") }}
+      <a href="{{ url_for('customer.my_orders') }}" class="btn btn-secondary">Back</a>
+    </form>
+  </div>
+</div>
+<script>
+  const paymentMethod = document.getElementById('payment-method');
+  const mpesaPhoneGroup = document.getElementById('mpesa-phone-group');
+  const paybillInfo = document.getElementById('paybill-info');
+
+  function togglePaymentMode() {
+    if (!paymentMethod) return;
+    const paybill = paymentMethod.value === 'Paybill';
+    if (mpesaPhoneGroup) {
+      mpesaPhoneGroup.style.display = paybill ? 'none' : 'block';
+    }
+    if (paybillInfo) {
+      paybillInfo.style.display = paybill ? 'block' : 'none';
+    }
+  }
+
+  if (paymentMethod) {
+    paymentMethod.addEventListener('change', togglePaymentMode);
+    togglePaymentMode();
+  }
+</script>
+{% endblock %}

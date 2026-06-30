@@ -1,0 +1,271 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;800&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --page-bg:#e8eaf0;
+    --surface:#f2f4f8;
+    --surface-2:#e4e7ee;
+    --border:#ced3de;
+    --text-1:#1c2235;
+    --text-2:#3d4665;
+    --text-3:#6e7a9a;
+    --text-4:#9aa2b8;
+    --amber:#c07a08;
+    --amber-bg:rgba(192,122,8,0.09);
+    --green:#177a48;
+    --green-bg:rgba(23,122,72,0.08);
+    --blue:#1a60b0;
+    --blue-bg:rgba(26,96,176,0.08);
+    --blue-br:rgba(26,96,176,0.24);
+  }
+
+  body { font-family:'Barlow',sans-serif; background:var(--page-bg); }
+
+  .page-wrap {
+    max-width:1100px;
+    margin:0 auto;
+    padding:48px 32px 80px;
+  }
+
+  /* HEADER */
+  .page-header {
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    margin-bottom:40px;
+    border-bottom:1px solid var(--border);
+    padding-bottom:24px;
+    flex-wrap:wrap;
+  }
+
+  .page-eyebrow {
+    font-family:'Barlow Condensed';
+    font-size:.7rem;
+    letter-spacing:.2em;
+    text-transform:uppercase;
+    color:var(--amber);
+    margin-bottom:6px;
+  }
+
+  .page-header h1 {
+    font-family:'Barlow Condensed';
+    font-size:2.3rem;
+    font-weight:800;
+    text-transform:uppercase;
+  }
+
+  .page-header span { color:var(--amber); }
+
+  .back-link {
+    text-decoration:none;
+    border:1px solid var(--border);
+    padding:8px 16px;
+    font-size:.75rem;
+    text-transform:uppercase;
+    color:var(--text-3);
+  }
+
+  /* INFO BAR */
+  .info-bar {
+    background:var(--blue-bg);
+    border:1px solid var(--blue-br);
+    padding:14px 18px;
+    margin-bottom:28px;
+    font-size:.85rem;
+    color:var(--blue);
+  }
+
+  /* CARD */
+  .card {
+    background:var(--surface);
+    border:1px solid var(--border);
+    margin-bottom:20px;
+    padding:20px;
+  }
+
+  /* GRID */
+  .info-grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:14px;
+    margin-top:14px;
+  }
+
+  .info-box {
+    background:var(--surface-2);
+    padding:12px;
+    border:1px solid var(--border);
+  }
+
+  .info-label {
+    font-size:.7rem;
+    text-transform:uppercase;
+    color:var(--text-4);
+    margin-bottom:4px;
+  }
+
+  .info-value {
+    font-size:.9rem;
+    color:var(--text-1);
+  }
+
+  /* STATUS */
+  .status {
+    display:inline-block;
+    padding:4px 10px;
+    font-size:.7rem;
+    text-transform:uppercase;
+    background:var(--amber-bg);
+    color:var(--amber);
+    border:1px solid var(--amber);
+  }
+
+  /* BUTTON */
+  .btn {
+    display:inline-block;
+    font-family:'Barlow Condensed';
+    text-transform:uppercase;
+    font-size:.75rem;
+    padding:10px 18px;
+    border:none;
+    cursor:pointer;
+    margin-top:12px;
+  }
+
+  .btn-success {
+    background:var(--green);
+    color:#fff;
+  }
+
+  .empty-state {
+    text-align:center;
+    padding:50px;
+    color:var(--text-4);
+  }
+</style>
+
+<div class="page-wrap">
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <div>
+      <div class="page-eyebrow">Admin — Orders</div>
+      <h1>Pending <span>Completions</span></h1>
+    </div>
+    <a href="{{ url_for('admin.dashboard') }}" class="back-link">Back</a>
+  </div>
+
+  <!-- INFO -->
+  <div class="info-bar">
+    Review completed deliveries submitted by drivers and approve them.
+  </div>
+
+  {% if pending_orders %}
+
+    {% for order in pending_orders %}
+    <div class="card">
+
+      <strong>#{{ order.id }} — {{ order.material.name if order.material else 'N/A' }}</strong>
+
+      <div class="info-grid">
+
+        <div class="info-box">
+          <div class="info-label">Driver</div>
+          <div class="info-value">
+            {{ order.driver.first_name if order.driver else 'N/A' }}
+            {{ order.driver.last_name if order.driver else '' }}
+          </div>
+        </div>
+
+        <div class="info-box">
+          <div class="info-label">Driver Contact</div>
+          <div class="info-value">
+            {{ order.driver.email if order.driver and order.driver.email else 'N/A' }}<br>
+            {{ order.driver.phone if order.driver and order.driver.phone else 'N/A' }}
+          </div>
+        </div>
+
+        <div class="info-box">
+          <div class="info-label">Customer</div>
+          <div class="info-value">
+            {{ order.customer.first_name if order.customer else 'N/A' }}
+            {{ order.customer.last_name if order.customer else '' }}
+          </div>
+        </div>
+
+        <div class="info-box">
+          <div class="info-label">Customer Contact</div>
+          <div class="info-value">
+            {{ order.customer.email if order.customer and order.customer.email else 'N/A' }}<br>
+            {{ order.customer.phone if order.customer and order.customer.phone else 'N/A' }}
+          </div>
+        </div>
+
+        <div class="info-box">
+          <div class="info-label">Quantity / Price</div>
+          <div class="info-value">
+            {{ order.quantity }}x — Ksh {{ order.total_price }}
+          </div>
+        </div>
+
+        <div class="info-box">
+          <div class="info-label">Drop Location</div>
+          <div class="info-value">
+            {{ order.drop_location.name if order.drop_location else 'N/A' }}
+          </div>
+        </div>
+
+        <div class="info-box">
+          <div class="info-label">Completed At</div>
+          <div class="info-value">
+            {{ order.completed_at.strftime('%d %b %Y %H:%M') if order.completed_at else 'N/A' }}
+          </div>
+        </div>
+
+        <div class="info-box">
+          <div class="info-label">Customer Online</div>
+          <div class="info-value">
+            {% if order.customer_id in online_users %}
+              Yes
+            {% else %}
+              No
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="info-box">
+          <div class="info-label">Driver Online</div>
+          <div class="info-value">
+            {% if order.driver_id in online_users %}
+              Yes
+            {% else %}
+              No
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="info-box">
+          <div class="info-label">Status</div>
+          <div class="status">Waiting Approval</div>
+        </div>
+
+      </div>
+
+      <a href="{{ url_for('admin.approve_completion', order_id=order.id) }}"
+         class="btn btn-success">✔ Approve Completion</a>
+
+    </div>
+    {% endfor %}
+
+  {% else %}
+    <div class="empty-state">
+      No pending completions.
+    </div>
+  {% endif %}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,43 @@
+# Python cache and build artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Flask runtime/database
+instance/
+*.db
+*.sqlite
+*.sqlite3
+
+# User uploads
+app/static/uploads/
+
+# Local tools/binaries
+ngrok.exe
+ngrok.zip
+
+# Environment files
+.env
+.env.*
+
+# Editor and OS files
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
+
+# Build and packaging
+build/
+dist/
+*.spec

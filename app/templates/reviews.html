@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width:960px; margin:50px auto; padding:40px 32px;">
+  <div style="margin-bottom:30px;">
+    <a href="{{ url_for('auth.index') }}" style="color:#55617d; text-decoration:none; border:1px solid #dfe3ea; padding:10px 18px; border-radius:4px; margin-bottom:20px; display:inline-block;">← Back to Home</a>
+    <div style="font-size:.8rem; letter-spacing:.22em; text-transform:uppercase; color:#c07a08; margin-bottom:10px;">Customer Reviews</div>
+    <h1 style="font-family:'Barlow Condensed',sans-serif; font-size:2.6rem; margin:0;">What customers <span style="color:#c07a08;">say</span></h1>
+  </div>
+
+  {% if reviews %}
+  <div style="display:grid; gap:16px;">
+    {% for review in reviews %}
+    <div style="background:#fff; border:1px solid #e2e8f0; border-radius:16px; padding:28px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:18px;">
+        <div>
+          <div style="font-size:1rem; font-weight:700; color:#1f2937;">{{ review.customer.full_name() if review.customer else 'Customer' }}</div>
+          <div style="font-size:.88rem; color:#6b7280;">Order #{{ review.order_id }} · {{ review.created_at.strftime('%Y-%m-%d') }}</div>
+        </div>
+        <div style="font-size:1rem; font-weight:700; color:#c07a08;">{{ review.rating }}/5</div>
+      </div>
+      <p style="color:#374151; line-height:1.7;">{{ review.comment or 'No additional feedback.' }}</p>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div style="text-align:center; color:#6b7280; font-size:1rem; background:#f8fafc; border:1px solid #e5e7eb; border-radius:14px; padding:36px;">There are no reviews available publicly yet. Check back soon.</div>
+  {% endif %}
+</div>
+{% endblock %}

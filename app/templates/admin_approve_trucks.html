@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-wrap" style="max-width:980px; margin:50px auto; padding:40px 32px;">
+  <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:30px;">
+    <div>
+      <div style="font-size:.8rem; text-transform:uppercase; letter-spacing:.22em; color:#c07a08; margin-bottom:10px;">Admin — Truck Approvals</div>
+      <h1 style="font-family:'Barlow Condensed',sans-serif; font-size:2.4rem; margin:0;">Pending <span style="color:#c07a08;">Trucks</span></h1>
+    </div>
+    <a href="{{ url_for('admin.dashboard') }}" style="color:#55617d; text-decoration:none; border:1px solid #dfe3ea; padding:10px 18px; border-radius:4px;">Back to Dashboard</a>
+  </div>
+
+  {% if trucks %}
+  <div style="display:grid; gap:16px;">
+    {% for truck in trucks %}
+    <div style="background:#fff; border:1px solid #dee2e6; border-radius:14px; padding:24px; display:flex; justify-content:space-between; gap:20px; align-items:center;">
+      <div>
+        <div style="font-size:1.1rem; font-weight:700; color:#1c2235;">{{ truck.registration_number }}</div>
+        <div style="color:#6e7a9a; margin-top:8px;">Owner: {{ truck.owner.full_name() if truck.owner else 'Unknown' }}</div>
+        <div style="color:#6e7a9a; margin-top:4px;">Driver: {{ truck.driver.full_name() if truck.driver else 'Unassigned' }}</div>
+        <div style="color:#6e7a9a; margin-top:4px;">Approval Status: <strong>{{ truck.approval_status }}</strong></div>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        {% if truck.approval_status != 'Approved' %}
+        <a href="{{ url_for('admin.approve_truck', truck_id=truck.id) }}" style="background:#1a60b0; color:#fff; padding:12px 18px; border-radius:8px; text-decoration:none;">Approve</a>
+        {% endif %}
+        {% if truck.approval_status != 'Rejected' %}
+        <a href="{{ url_for('admin.reject_truck', truck_id=truck.id) }}" style="background:#f4f4f4; color:#c0372f; padding:12px 18px; border-radius:8px; text-decoration:none;">Reject</a>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div style="background:#fff; border:1px solid #dee2e6; border-radius:14px; padding:32px; text-align:center; color:#6e7a9a;">No truck approvals pending at this time.</div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+  :root {
+    --page-bg:#e8eaf0;
+    --surface:#f2f4f8;
+    --surface-2:#e4e7ee;
+    --border:#ced3de;
+    --text-1:#1c2235;
+    --text-2:#3d4665;
+    --text-3:#6e7a9a;
+    --amber:#c07a08;
+    --green:#177a48;
+    --green-bg:rgba(23,122,72,0.08);
+    --red:#b02828;
+    --red-bg:rgba(176,40,40,0.07);
+  }
+
+  body { font-family:'Barlow',sans-serif; background:var(--page-bg); }
+  .page-wrap { max-width:1200px; margin:0 auto; padding:44px 28px 70px; }
+  .header { display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:12px; border-bottom:1px solid var(--border); padding-bottom:18px; margin-bottom:24px; }
+  .title { font-family:'Barlow Condensed',sans-serif; text-transform:uppercase; font-size:2.1rem; font-weight:800; color:var(--text-1); }
+  .sub { color:var(--text-3); font-size:.9rem; margin-top:5px; }
+  .back { text-decoration:none; color:var(--text-2); border:1px solid var(--border); padding:9px 14px; border-radius:4px; font-size:.78rem; text-transform:uppercase; font-weight:700; }
+
+  .section { margin-bottom:24px; }
+  .section h3 { font-family:'Barlow Condensed',sans-serif; text-transform:uppercase; letter-spacing:.08em; font-size:1rem; color:var(--text-2); margin-bottom:10px; }
+  .card { background:var(--surface); border:1px solid var(--border); overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; min-width:740px; }
+  th, td { padding:11px 12px; border-bottom:1px solid var(--border); text-align:left; font-size:.85rem; color:var(--text-2); }
+  th { font-size:.68rem; text-transform:uppercase; letter-spacing:.11em; color:var(--text-3); background:var(--surface-2); }
+  tr:last-child td { border-bottom:none; }
+  .badge-ok { display:inline-block; background:var(--green-bg); color:var(--green); border:1px solid rgba(23,122,72,0.25); padding:3px 8px; border-radius:3px; font-size:.7rem; font-weight:700; text-transform:uppercase; }
+  .badge-bad { display:inline-block; background:var(--red-bg); color:var(--red); border:1px solid rgba(176,40,40,0.25); padding:3px 8px; border-radius:3px; font-size:.7rem; font-weight:700; text-transform:uppercase; }
+  .empty { background:var(--surface); border:1px solid var(--border); color:var(--text-3); padding:30px; text-align:center; }
+  .report-toolbar { background:var(--surface); border:1px solid var(--border); padding:16px; margin-bottom:22px; display:flex; align-items:end; gap:12px; flex-wrap:wrap; }
+  .filter-field { display:grid; gap:5px; }
+  .filter-field label { font-size:.68rem; color:var(--text-3); text-transform:uppercase; font-weight:700; letter-spacing:.1em; }
+  .filter-field input { padding:10px; border:1px solid var(--border); background:#fff; color:var(--text-1); }
+  .toolbar-btn { border:0; text-decoration:none; padding:11px 16px; background:var(--amber); color:#fff; font-weight:700; cursor:pointer; border-radius:4px; }
+  .toolbar-btn.secondary { background:#fff; color:var(--text-2); border:1px solid var(--border); }
+
+  @media print {
+    .navbar, .flash-container, .report-toolbar, .back, .ai-assistant { display:none !important; }
+    .page-content { padding:0 !important; margin:0 !important; }
+    .page-wrap { max-width:none; padding:0; }
+    body { background:#fff; }
+    .card, .empty { box-shadow:none; }
+    table { min-width:0; }
+  }
+</style>
+
+<div class="page-wrap">
+  <div class="header">
+    <div>
+      <div class="title">Delivery Reports</div>
+      <div class="sub">Truck activity, completed deliveries, prices, materials, and driver decline reasons</div>
+    </div>
+    <a href="{{ url_for('admin.dashboard') }}" class="back">Back to Dashboard</a>
+  </div>
+
+  <form class="report-toolbar" method="get">
+    <div class="filter-field">
+      <label for="start_date">From Date</label>
+      <input id="start_date" name="start_date" type="date" value="{{ start_date }}">
+    </div>
+    <div class="filter-field">
+      <label for="end_date">To Date</label>
+      <input id="end_date" name="end_date" type="date" value="{{ end_date }}">
+    </div>
+    <button class="toolbar-btn" type="submit">Show Report</button>
+    <a class="toolbar-btn secondary" href="{{ url_for('admin.delivery_reports') }}">Reset</a>
+    <button class="toolbar-btn secondary" type="button" onclick="window.print()">Print as PDF</button>
+  </form>
+
+  <div class="section">
+    <h3>Daily Truck Summary</h3>
+    {% if daily_summary %}
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Truck</th>
+            <th>Driver</th>
+            <th>Deliveries</th>
+            <th>Total Price</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in daily_summary %}
+          <tr>
+            <td>{{ row.date.strftime('%Y-%m-%d') if row.date else 'N/A' }}</td>
+            <td>{{ row.truck }}</td>
+            <td>{{ row.driver }}</td>
+            <td>{{ row.deliveries }}</td>
+            <td>Ksh {{ row.total_price }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty">No completed deliveries available for summary.</div>
+    {% endif %}
+  </div>
+
+  <div class="section">
+    <h3>Completed Delivery Details</h3>
+    {% if delivery_details %}
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Order</th>
+            <th>Truck</th>
+            <th>Driver</th>
+            <th>Material</th>
+            <th>Quantity</th>
+            <th>Price</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in delivery_details %}
+          <tr>
+            <td>{{ row.date.strftime('%Y-%m-%d') if row.date else 'N/A' }}</td>
+            <td>#{{ row.order_id }}</td>
+            <td>{{ row.truck }}</td>
+            <td>{{ row.driver }}</td>
+            <td>{{ row.material }}</td>
+            <td>{{ row.quantity }}</td>
+            <td>Ksh {{ row.price }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty">No completed delivery details yet.</div>
+    {% endif %}
+  </div>
+
+  <div class="section">
+    <h3>Driver Declined Requests</h3>
+    {% if declined_logs %}
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Order</th>
+            <th>Driver</th>
+            <th>Truck</th>
+            <th>Status</th>
+            <th>Reason</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for log in declined_logs %}
+          <tr>
+            <td>{{ (log.responded_at or log.created_at).strftime('%Y-%m-%d %H:%M') if (log.responded_at or log.created_at) else 'N/A' }}</td>
+            <td>#{{ log.order_id }}</td>
+            <td>{{ log.driver.full_name() if log.driver else 'N/A' }}</td>
+            <td>{{ log.truck.registration_number if log.truck else 'N/A' }}</td>
+            <td><span class="badge-bad">Declined</span></td>
+            <td>{{ log.reason if log.reason else 'No reason provided' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty">No declined job requests recorded.</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,373 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;800&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --page-bg:   #e8eaf0;
+    --surface:   #f2f4f8;
+    --surface-2: #e4e7ee;
+    --border:    #ced3de;
+    --border-2:  #b8bfcf;
+    --text-1:    #1c2235;
+    --text-2:    #3d4665;
+    --text-3:    #6e7a9a;
+    --text-4:    #9aa2b8;
+
+    --amber:     #c07a08;
+    --amber-bg:  rgba(192,122,8,0.09);
+    --amber-br:  rgba(192,122,8,0.28);
+
+    --green:     #177a48;
+    --green-bg:  rgba(23,122,72,0.08);
+    --green-br:  rgba(23,122,72,0.28);
+
+    --blue:      #1a60b0;
+    --blue-bg:   rgba(26,96,176,0.08);
+    --blue-br:   rgba(26,96,176,0.24);
+
+    --red:       #b02828;
+    --red-bg:    rgba(176,40,40,0.07);
+    --red-br:    rgba(176,40,40,0.24);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'Barlow', sans-serif;
+    background: var(--page-bg);
+    color: var(--text-1);
+}
+
+.page-wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 48px 32px 80px;
+}
+
+/* HEADER */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 35px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+}
+
+.page-eyebrow {
+    font-family: 'Barlow Condensed';
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--amber);
+}
+
+.page-title {
+    font-family: 'Barlow Condensed';
+    font-size: 2.3rem;
+    font-weight: 800;
+}
+
+/* STATS */
+.stats-bar {
+    display: flex;
+    gap: 1px;
+    background: var(--border);
+    margin-bottom: 30px;
+}
+
+.stat {
+    flex: 1;
+    background: var(--surface);
+    padding: 20px;
+    text-align: center;
+}
+
+.stat-val {
+    font-family: 'Barlow Condensed';
+    font-size: 2rem;
+    font-weight: 800;
+}
+
+.stat-lbl {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-4);
+}
+
+/* CARD */
+.card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 18px;
+    margin-bottom: 18px;
+}
+
+/* GRID */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+}
+
+.cell {
+    background: white;
+    padding: 12px;
+    border-left: 3px solid var(--blue);
+}
+
+.label {
+    font-size: 0.7rem;
+    color: var(--text-4);
+    text-transform: uppercase;
+}
+
+.value {
+    font-weight: 600;
+}
+
+/* BADGES */
+.badge {
+    font-size: 0.65rem;
+    padding: 4px 8px;
+    border-radius: 3px;
+    font-family: 'Barlow Condensed';
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+.badge-green { background: var(--green-bg); color: var(--green); }
+.badge-blue  { background: var(--blue-bg); color: var(--blue); }
+.badge-amber { background: var(--amber-bg); color: var(--amber); }
+
+/* BUTTONS */
+.btn {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 3px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Barlow Condensed';
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.btn-primary { background: var(--blue); color: white; }
+.btn-success { background: var(--green); color: white; }
+.btn-warning { background: var(--amber); color: white; }
+
+/* ORDER CARD */
+.order {
+    background: white;
+    border: 1px solid var(--border);
+    padding: 15px;
+    margin-bottom: 10px;
+}
+
+.order:hover {
+    background: var(--surface-2);
+}
+
+/* EMPTY */
+.empty {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-4);
+}
+</style>
+
+<div class="page-wrap">
+
+    <!-- HEADER -->
+    <div class="page-header">
+        <div>
+            <div class="page-eyebrow">Driver Dashboard</div>
+            <div class="page-title">Welcome {{ current_user.first_name }}</div>
+        </div>
+        {% if unread_count > 0 %}
+        <div style="background: var(--red); color: white; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem;">
+            {{ unread_count }}
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-bar">
+        <div class="stat">
+            <div class="stat-val">{{ orders|length }}</div>
+            <div class="stat-lbl">Active/Assigned</div>
+        </div>
+        <div class="stat">
+            <div class="stat-val">{{ orders|selectattr('status','equalto','In Transit')|list|length }}</div>
+            <div class="stat-lbl">In Transit</div>
+        </div>
+        <div class="stat">
+            <div class="stat-val">{{ completed_count }}</div>
+            <div class="stat-lbl">Completed</div>
+        </div>
+    </div>
+
+    <!-- PROFILE -->
+    <div class="card">
+        <h3>Profile</h3>
+        <div class="grid">
+            <div class="cell">
+                <div class="label">Name</div>
+                <div class="value">{{ current_user.first_name }} {{ current_user.last_name }}</div>
+            </div>
+            <div class="cell">
+                <div class="label">License</div>
+                <div class="value">
+                    {% if current_user.license_approved %}
+                        <span class="badge badge-green">Approved</span>
+                    {% else %}
+                        <span class="badge badge-amber">Pending</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TRUCK -->
+    <div class="card">
+        <h3>Assigned Truck</h3>
+
+        {% if truck %}
+        <div class="grid">
+            <div class="cell">
+                <div class="label">Reg Number</div>
+                <div class="value">{{ truck.registration_number }}</div>
+            </div>
+            <div class="cell">
+                <div class="label">Status</div>
+                <div class="value">
+                    {% if truck.status == 'good' %}
+                        <span class="badge badge-green">Good</span>
+                    {% else %}
+                        <span class="badge badge-amber">{{ truck.status }}</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <br>
+        <a class="btn btn-primary" href="{{ url_for('driver.update_truck_status') }}">
+            Update Truck
+        </a>
+
+        {% else %}
+        <div class="empty">No truck assigned</div>
+        {% endif %}
+    </div>
+
+    <!-- ORDERS -->
+    <div class="card">
+        <h3>Job Requests</h3>
+
+        {% if pending_orders %}
+            {% for order in pending_orders %}
+            <div class="order">
+                <div class="grid">
+                    <div class="cell">
+                        <div class="label">Material</div>
+                        <div class="value">{{ order.material.name }}</div>
+                    </div>
+                    <div class="cell">
+                        <div class="label">Quantity</div>
+                        <div class="value">{{ order.quantity }}</div>
+                    </div>
+                    <div class="cell">
+                        <div class="label">Price</div>
+                        <div class="value">Ksh {{ order.total_price }}</div>
+                    </div>
+                </div>
+
+                <br>
+                <a class="btn btn-primary" href="{{ url_for('driver.respond_order', order_id=order.id) }}">
+                    Respond to Request
+                </a>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty">No job requests right now</div>
+        {% endif %}
+    </div>
+
+    <!-- ACTIVE ORDERS -->
+    <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+            <h3>Your Active Orders</h3>
+            <a class="btn btn-warning" href="{{ url_for('driver.completed_orders') }}">View My Completed Orders</a>
+        </div>
+        <br>
+
+        {% if orders %}
+            {% for order in orders %}
+            <div class="order">
+                <div class="grid">
+                    <div class="cell">
+                        <div class="label">Material</div>
+                        <div class="value">{{ order.material.name }}</div>
+                    </div>
+
+                    <div class="cell">
+                        <div class="label">Quantity</div>
+                        <div class="value">{{ order.quantity }}</div>
+                    </div>
+
+                    <div class="cell">
+                        <div class="label">Location</div>
+                        <div class="value">{{ order.drop_location.name }}</div>
+                    </div>
+
+                    <div class="cell">
+                        <div class="label">Customer Phone</div>
+                        <div class="value">{{ order.customer.phone if order.customer else 'N/A' }}</div>
+                    </div>
+
+                    <div class="cell">
+                        <div class="label">Status</div>
+                        <div class="value">
+                            {% if order.status == 'Pending Driver Response' %}
+                                <span class="badge badge-amber">Pending Response</span>
+                            {% elif order.status == 'In Transit' %}
+                                <span class="badge badge-blue">In Transit</span>
+                            {% else %}
+                                <span class="badge badge-amber">{{ order.status }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 16px; display: flex; gap: 12px; flex-wrap: wrap;">
+                    {% if order.status == 'In Transit' %}
+                    <a class="btn btn-success"
+                       href="{{ url_for('driver.complete_order', order_id=order.id) }}">
+                        Complete
+                    </a>
+                    {% endif %}
+
+                    {% if order.status in ['In Transit','Completed','Completed (Pending Admin Approval)'] %}
+                    <a class="btn btn-primary" href="{{ url_for('driver.chat', order_id=order.id) }}">
+                        Chat with Customer
+                    </a>
+
+
+
+
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty">No assigned orders</div>
+        {% endif %}
+    </div>
+
+</div>
+
+{% endblock %}
