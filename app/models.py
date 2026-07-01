@@ -79,7 +79,7 @@ class Order(db.Model):
     admin_approved = db.Column(db.Boolean, default=False)  # Admin approved completion
     approved_at = db.Column(db.DateTime, nullable=True)  # When admin approved
 
-    # 🔥 FIXED RELATIONSHIPS
+    #  FIXED RELATIONSHIPS
     customer = db.relationship('User', foreign_keys=[customer_id], backref='customer_orders')
     driver = db.relationship('User', foreign_keys=[driver_id], backref='driver_orders')
     drop_location = db.relationship('Location')

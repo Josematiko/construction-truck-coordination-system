@@ -30,7 +30,12 @@ _load_local_env()
 
 class Config:
     SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret-key')
-    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL","sqlite:///database.db")
+    database_url = os.getenv("DATABASE_URL")
+
+if database_url and database_url.startswith("postgres://"):
+    database_url = database_url.replace("postgres://", "postgresql://", 1)
+
+SQLALCHEMY_DATABASE_URI = database_url or "sqlite:///database.db"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     MPESA_ENV = os.getenv('MPESA_ENV', 'sandbox')
