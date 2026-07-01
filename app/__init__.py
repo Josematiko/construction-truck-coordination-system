@@ -20,8 +20,7 @@ def create_app():
     migrate.init_app(app, db)
     login_manager.init_app(app)
     login_manager.login_view = 'auth.login'
-    socketio.init_app(app)
-
+    socketio.init_app(app, cors_allowed_origins="*")
     # Import models here (after db is defined)
     from app.models import User
 
@@ -41,9 +40,5 @@ def create_app():
     app.register_blueprint(driver)
     app.register_blueprint(customer)
     app.register_blueprint(owner)
-
-    # Ensure all tables exist (for development/testing). For production, use Flask-Migrate.
-    with app.app_context():
-        db.create_all()
 
     return app
