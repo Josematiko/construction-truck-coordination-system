@@ -20,6 +20,12 @@ The project was developed as part of the **Bachelor of Science in Computer Scien
 
 ---
 
+## 🌐 Live Demo
+
+**Try the application here:**
+
+https://construction-truck-coordination-system.onrender.com
+
 # ✨ Features
 
 - ✅ Customer Registration & Authentication
